@@ -1,5 +1,6 @@
 package com.yetote.mediautil.fragment;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,9 +12,11 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.yetote.mediautil.CodecInfoActivity;
 import com.yetote.mediautil.adapter.HwRvAdapter;
 import com.yetote.mediautil.R;
 import com.yetote.mediautil.bean.HwBean;
+import com.yetote.mediautil.interfaces.OnClick;
 import com.yetote.mediautil.util.DeviceUtil;
 
 import java.util.ArrayList;
@@ -36,8 +39,16 @@ public class HwFragment extends Fragment {
         rv = v.findViewById(R.id.fragment_hw_rv);
         rv.setLayoutManager(new LinearLayoutManager(getActivity()));
         list = new ArrayList<>();
-        list = Arrays.asList(DeviceUtil.checkCodec());
+        list = Arrays.asList(DeviceUtil.checkAllCodec());
         adapter = new HwRvAdapter(getActivity(), list);
+        adapter.setOnClick(new OnClick<HwBean>() {
+            @Override
+            public void onClickListener(HwBean hwBean) {
+                Intent i = new Intent(getActivity(), CodecInfoActivity.class);
+                i.putExtra("codecName", hwBean.getCodecName());
+                startActivity(i);
+            }
+        });
         rv.setAdapter(adapter);
 
 

@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.yetote.mediautil.R;
 import com.yetote.mediautil.bean.HwBean;
+import com.yetote.mediautil.interfaces.OnClick;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,10 +19,15 @@ import java.util.List;
 public class HwRvAdapter extends RecyclerView.Adapter {
     private Context context;
     private List<HwBean> list;
+    private OnClick<HwBean> onClick;
 
     public HwRvAdapter(Context context, List<HwBean> list) {
         this.context = context;
         this.list = list;
+    }
+
+    public void setOnClick(OnClick<HwBean> onClick) {
+        this.onClick = onClick;
     }
 
     class MyViewHolder extends RecyclerView.ViewHolder {
@@ -82,7 +88,9 @@ public class HwRvAdapter extends RecyclerView.Adapter {
     @NonNull
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        return new MyViewHolder(LayoutInflater.from(context).inflate(R.layout.item_hw_rv, parent, false));
+        View v = LayoutInflater.from(context).inflate(R.layout.item_hw_rv, parent, false);
+        v.setOnClickListener(v1 -> onClick.onClickListener(list.get((Integer) v.getTag())));
+        return new MyViewHolder(v);
     }
 
     @Override
@@ -96,6 +104,7 @@ public class HwRvAdapter extends RecyclerView.Adapter {
         vh.getIsHardwareAcceleratedTv().setText(String.format(context.getResources().getString(R.string.codec_info), "是否支持硬件加速", list.get(position).getIsHardwareAccelerated()));
         vh.getIsSoftwareOnlyTv().setText(String.format(context.getResources().getString(R.string.codec_info), "是否为软编解码器", list.get(position).getIsSoftwareOnly()));
         vh.getIsVendorTv().setText(String.format(context.getResources().getString(R.string.codec_info), "是否为供应商提供", list.get(position).getIsVendor()));
+        vh.itemView.setTag(position);
     }
 
     @Override
