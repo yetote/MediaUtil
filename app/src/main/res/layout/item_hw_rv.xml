@@ -2,14 +2,16 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="wrap_content"
+    android:layout_margin="10dp">
 
     <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="5dp"
         app:cardBackgroundColor="@color/gray_ec"
-        app:cardCornerRadius="5dp"
+        app:cardCornerRadius="10dp"
+        app:cardUseCompatPadding="true"
+        app:cardPreventCornerOverlap="false"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
@@ -20,7 +22,7 @@
             android:orientation="vertical">
 
             <TextView
-                android:id="@+id/item_hw_title_tv"
+                android:id="@+id/item_hw_title_codecName"
                 android:layout_width="match_parent"
                 android:layout_height="30dp"
                 android:layout_margin="10dp"
@@ -28,12 +30,61 @@
                 android:textSize="20sp" />
 
             <TextView
-                android:id="@+id/item_hw_content_tv"
+                android:id="@+id/item_hw_content_canonicalName"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@color/white"
                 android:gravity="center_vertical"
                 android:padding="10dp" />
+
+            <TextView
+                android:id="@+id/item_hw_content_supportedTypes"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/white"
+                android:gravity="center_vertical"
+                android:padding="10dp" />
+
+            <TextView
+                android:id="@+id/item_hw_content_isAlias"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/white"
+                android:gravity="center_vertical"
+                android:padding="10dp" />
+
+            <TextView
+                android:id="@+id/item_hw_content_isEncoder"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/white"
+                android:gravity="center_vertical"
+                android:padding="10dp" />
+
+            <TextView
+                android:id="@+id/item_hw_content_isHardwareAccelerated"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/white"
+                android:gravity="center_vertical"
+                android:padding="10dp" />
+
+            <TextView
+                android:id="@+id/item_hw_content_isSoftwareOnly"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/white"
+                android:gravity="center_vertical"
+                android:padding="10dp" />
+
+            <TextView
+                android:id="@+id/item_hw_content_isVendor"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/white"
+                android:gravity="center_vertical"
+                android:padding="10dp" />
+
         </LinearLayout>
     </androidx.cardview.widget.CardView>
 </androidx.constraintlayout.widget.ConstraintLayout>

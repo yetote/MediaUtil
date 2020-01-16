@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">MediaUtil</string>
+    <string name="codec_info">%1$s:%2$s</string>
 </resources>
