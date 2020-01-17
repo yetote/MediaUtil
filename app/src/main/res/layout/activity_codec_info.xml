@@ -7,6 +7,48 @@
 
     tools:context=".CodecInfoActivity">
 
+    <TextView
+        android:id="@+id/codec_info_title"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:background="@color/gray_ec"
+        android:gravity="center_vertical"
+        android:padding="5dp"
+        android:text="@string/codec_info_title"
+        android:textSize="20sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/codec_info_maxInstances"
+        style="@style/CodecInfoTextViewStyle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/codec_info_title" />
+
+
+    <TextView
+        android:id="@+id/codec_info_mimeType"
+        style="@style/CodecInfoTextViewStyle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/codec_info_maxInstances" />
+
+    <TextView
+        android:id="@+id/codec_info_defaultMimeType"
+        style="@style/CodecInfoTextViewStyle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/codec_info_mimeType" />
+
+
     <LinearLayout
         android:id="@+id/codec_info_video"
         android:layout_width="match_parent"
@@ -14,7 +56,59 @@
         android:orientation="vertical"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toBottomOf="@id/codec_info_defaultMimeType">
+
+        <TextView
+            android:id="@+id/codec_info_video_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/gray_ec"
+            android:gravity="center_vertical"
+            android:padding="5dp"
+            android:text="@string/video_codec_info_title"
+            android:textSize="20sp" />
+
+        <TextView
+            android:id="@+id/codec_info_video_bitRate"
+            style="@style/CodecInfoTextViewStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:id="@+id/codec_info_video_widthAlignment"
+            style="@style/CodecInfoTextViewStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:id="@+id/codec_info_video_heightAlignment"
+            style="@style/CodecInfoTextViewStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:id="@+id/codec_info_video_supportedFrameRates"
+            style="@style/CodecInfoTextViewStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:id="@+id/codec_info_video_supportedWidths"
+            style="@style/CodecInfoTextViewStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:id="@+id/codec_info_video_supportedHeights"
+            style="@style/CodecInfoTextViewStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:id="@+id/codec_info_video_supportedPerformancePoints"
+            style="@style/CodecInfoTextViewStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
 
     </LinearLayout>
 
@@ -27,5 +121,70 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/codec_info_video">
 
+        <TextView
+            android:id="@+id/codec_info_audio_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/gray_ec"
+            android:gravity="center_vertical"
+            android:padding="5dp"
+            android:text="@string/audio_codec_info_title"
+            android:textSize="20sp" />
+
+        <TextView
+            android:id="@+id/codec_info_audio_bitRate"
+            style="@style/CodecInfoTextViewStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:id="@+id/codec_info_audio_maxInputChannelCount"
+            style="@style/CodecInfoTextViewStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:id="@+id/codec_info_audio_supportedSampleRateRange"
+            style="@style/CodecInfoTextViewStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:id="@+id/codec_info_audio_supportedSampleRates"
+            style="@style/CodecInfoTextViewStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/codec_info_encoder"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/codec_info_audio">
+
+        <TextView
+            android:id="@+id/codec_info_encoder_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/gray_ec"
+            android:gravity="center_vertical"
+            android:padding="5dp"
+            android:text="@string/encoder_codec_info_title"
+            android:textSize="20sp" />
+
+        <TextView
+            android:id="@+id/codec_info_encode_complexity"
+            style="@style/CodecInfoTextViewStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:id="@+id/codec_info_encode_quality"
+            style="@style/CodecInfoTextViewStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,4 +1,8 @@
 <resources>
     <string name="app_name">MediaUtil</string>
     <string name="codec_info">%1$s:%2$s</string>
+    <string name="codec_info_title">解码器参数</string>
+    <string name="video_codec_info_title">视频解码器参数</string>
+    <string name="audio_codec_info_title">音频解码器参数</string>
+    <string name="encoder_codec_info_title">编码器参数</string>
 </resources>

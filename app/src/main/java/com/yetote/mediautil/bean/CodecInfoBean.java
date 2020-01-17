@@ -85,13 +85,13 @@ public class CodecInfoBean {
     public class AudioCodecInfo {
         String bitRate;
         int maxInputChannelCount;
-        String supportedSampleRate;
+        String supportedSampleRateRange;
         String supportedSampleRates;
 
-        public AudioCodecInfo(String bitRate, int maxInputChannelCount, String supportedSampleRate, String supportedSampleRates) {
+        public AudioCodecInfo(String bitRate, int maxInputChannelCount, String supportedSampleRateRange, String supportedSampleRates) {
             this.bitRate = bitRate;
             this.maxInputChannelCount = maxInputChannelCount;
-            this.supportedSampleRate = supportedSampleRate;
+            this.supportedSampleRateRange = supportedSampleRateRange;
             this.supportedSampleRates = supportedSampleRates;
         }
 
@@ -111,12 +111,12 @@ public class CodecInfoBean {
             this.maxInputChannelCount = maxInputChannelCount;
         }
 
-        public String getSupportedSampleRate() {
-            return supportedSampleRate;
+        public String getSupportedSampleRateRange() {
+            return supportedSampleRateRange;
         }
 
-        public void setSupportedSampleRate(String supportedSampleRate) {
-            this.supportedSampleRate = supportedSampleRate;
+        public void setSupportedSampleRateRange(String supportedSampleRateRange) {
+            this.supportedSampleRateRange = supportedSampleRateRange;
         }
 
         public String getSupportedSampleRates() {
@@ -132,7 +132,7 @@ public class CodecInfoBean {
             return "AudioCodecInfo{" +
                     "bitRate='" + bitRate + '\'' +
                     "\n, maxInputChannelCount=" + maxInputChannelCount +
-                    "\n, supportedSampleRate='" + supportedSampleRate + '\'' +
+                    "\n, supportedSampleRate='" + supportedSampleRateRange + '\'' +
                     "\n, supportedSampleRates='" + supportedSampleRates + '\'' +
                     '}';
         }

@@ -90,13 +90,15 @@ public class DeviceUtil {
                     videoCapabilities.getSupportedHeights().toString()
             ));
             List<MediaCodecInfo.VideoCapabilities.PerformancePoint> supportedPerformancePoints = (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) ? videoCapabilities.getSupportedPerformancePoints() : null;
+            String supportedPerformancePointStr = "";
             if (supportedPerformancePoints != null) {
-                String supportedPerformancePointStr = "";
                 for (int i = 0; i < supportedPerformancePoints.size(); i++) {
-                    supportedPerformancePointStr += supportedPerformancePoints.get(i).toString() + "fps";
+                    supportedPerformancePointStr += supportedPerformancePoints.get(i).toString() + "fps\n";
                 }
-                codecInfoBean.getVideoCodecInfo().setSupportedPerformancePoints(supportedPerformancePointStr);
             }
+            codecInfoBean.getVideoCodecInfo().setSupportedPerformancePoints(supportedPerformancePointStr);
+        } else {
+            codecInfoBean.setVideoCodecInfo(null);
         }
 
         MediaCodecInfo.AudioCapabilities audioCapabilities = capabilities.getAudioCapabilities();
@@ -107,6 +109,8 @@ public class DeviceUtil {
                     Arrays.toString(audioCapabilities.getSupportedSampleRateRanges()),
                     Arrays.toString(audioCapabilities.getSupportedSampleRates())
             ));
+        } else {
+            codecInfoBean.setAudioCodecInfo(null);
         }
 
         MediaCodecInfo.EncoderCapabilities encoderCapabilities = capabilities.getEncoderCapabilities();
@@ -115,6 +119,8 @@ public class DeviceUtil {
                     encoderCapabilities.getComplexityRange().toString(),
                     ((Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) ? encoderCapabilities.getQualityRange().toString() : null)
             ));
+        } else {
+            codecInfoBean.setEncoderInfo(null);
         }
         return codecInfoBean;
     }
