@@ -26,9 +26,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
         initView();
-
     }
 
     private void initView() {
@@ -36,8 +34,8 @@ public class MainActivity extends AppCompatActivity {
         tl = findViewById(R.id.tl);
         ArrayList<Fragment> fragmentArrayList = new ArrayList<>();
         fragmentArrayList.add(new HwFragment());
-        fragmentArrayList.add(new SettingFragment());
         fragmentArrayList.add(new UtilFragment());
+        fragmentArrayList.add(new SettingFragment());
 
         String[] title = new String[]{
                 "硬件", "功能", "设置"

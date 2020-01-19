@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="10dp"
+    tools:context=".YUVActivity">
+
+    <TextView
+        android:id="@+id/yuv_path_et"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:gravity="center_vertical"
+        android:hint="@string/yuv_edit_hint"
+        android:maxLines="1"
+        android:paddingStart="5dp"
+        android:singleLine="true"
+        app:layout_constraintBottom_toBottomOf="@+id/yuv_choose_btn"
+        app:layout_constraintEnd_toStartOf="@+id/yuv_choose_btn"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/yuv_choose_btn"
+        android:layout_width="66dp"
+        android:layout_height="32dp"
+        android:background="@color/mediumseagreen"
+        android:text="@string/choose"
+        android:textColor="@color/white"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+
+    <TextView
+        android:id="@+id/yuv_codec_name_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="40dp"
+        android:layout_marginTop="8dp"
+        android:gravity="center_vertical"
+        android:paddingStart="5dp"
+        android:text="@string/yuv_codec_name"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/yuv_path_et" />
+
+    <Spinner
+        android:id="@+id/yuv_codec_name_spinner"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:entries="@array/codec_name"
+        app:layout_constraintBottom_toBottomOf="@+id/yuv_codec_name_tv"
+        app:layout_constraintEnd_toStartOf="@+id/yuv_codec_name_help"
+        app:layout_constraintStart_toEndOf="@+id/yuv_codec_name_tv"
+        app:layout_constraintTop_toTopOf="@+id/yuv_codec_name_tv" />
+
+    <ImageView
+        android:id="@+id/yuv_codec_name_help"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:padding="10dp"
+        android:src="@drawable/help"
+        app:layout_constraintEnd_toEndOf="@+id/yuv_choose_btn"
+        app:layout_constraintTop_toTopOf="@+id/yuv_codec_name_spinner" />
+
+    <TextView
+        android:id="@+id/yuv_codec_name_width_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:gravity="center_vertical"
+        android:paddingStart="5dp"
+        android:text="@string/width"
+        app:layout_constraintBottom_toBottomOf="@+id/yuv_codec_name_width_et"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/yuv_codec_name_width_et" />
+
+    <EditText
+        android:id="@+id/yuv_codec_name_width_et"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="16dp"
+        android:hint="@string/hint_width"
+        app:layout_constraintEnd_toStartOf="@+id/guideline"
+        app:layout_constraintStart_toEndOf="@+id/yuv_codec_name_width_tv"
+        app:layout_constraintTop_toBottomOf="@+id/yuv_codec_name_spinner" />
+
+    <TextView
+        android:id="@+id/yuv_codec_name_height_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:layout_marginStart="16dp"
+        android:gravity="center_vertical"
+        android:paddingStart="5dp"
+        android:text="@string/height"
+        app:layout_constraintBottom_toBottomOf="@+id/yuv_codec_name_height_et"
+        app:layout_constraintStart_toStartOf="@+id/guideline"
+        app:layout_constraintTop_toTopOf="@+id/yuv_codec_name_height_et" />
+
+    <EditText
+        android:id="@+id/yuv_codec_name_height_et"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:hint="@string/hint_height"
+        app:layout_constraintEnd_toEndOf="@+id/yuv_codec_name_help"
+        app:layout_constraintStart_toEndOf="@+id/yuv_codec_name_height_tv"
+        app:layout_constraintTop_toBottomOf="@+id/yuv_codec_name_help" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.5" />
+
+    <Button
+        android:id="@+id/yuv_parse_btn"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginVertical="10dp"
+        android:background="@color/mediumseagreen"
+        android:text="@string/parse"
+        android:textColor="@color/white"
+        app:layout_constraintEnd_toEndOf="@+id/yuv_codec_name_height_et"
+        app:layout_constraintStart_toStartOf="@+id/yuv_codec_name_width_tv"
+        app:layout_constraintTop_toBottomOf="@+id/yuv_codec_name_width_et" />
+
+    <ImageView
+        android:id="@+id/yuv_frame_front"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:src="@drawable/front"
+        app:layout_constraintBottom_toBottomOf="@+id/yuv_frame_data"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/yuv_parse_btn" />
+
+    <android.opengl.GLSurfaceView
+        android:id="@+id/yuv_frame_data"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="20dp"
+        app:layout_constraintBottom_toTopOf="@+id/yuv_frame_rv"
+        app:layout_constraintEnd_toStartOf="@+id/yuv_frame_behind"
+        app:layout_constraintStart_toEndOf="@+id/yuv_frame_front"
+        app:layout_constraintTop_toBottomOf="@+id/yuv_parse_btn" />
+
+    <ImageView
+        android:id="@+id/yuv_frame_behind"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:src="@drawable/back"
+        app:layout_constraintBottom_toBottomOf="@+id/yuv_frame_data"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/yuv_parse_btn" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/yuv_frame_rv"
+        android:layout_width="match_parent"
+        android:layout_height="110dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+</androidx.constraintlayout.widget.ConstraintLayout>

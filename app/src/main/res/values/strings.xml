@@ -5,4 +5,15 @@
     <string name="video_codec_info_title">视频解码器参数</string>
     <string name="audio_codec_info_title">音频解码器参数</string>
     <string name="encoder_codec_info_title">编码器参数</string>
+    <string name="choose">选择文件</string>
+    <string name="parse">解析</string>
+    <string name="yuv_edit_hint">请选择文件</string>
+    <string name="codec_type">解码方式:</string>
+    <string name="hardware_codec">硬解</string>
+    <string name="ffmpeg_codec">软解</string>
+    <string name="yuv_codec_name">编码类型</string>
+    <string name="hint_width">请输入宽度</string>
+    <string name="hint_height">请输入高度</string>
+    <string name="width">宽度</string>
+    <string name="height">高度</string>
 </resources>

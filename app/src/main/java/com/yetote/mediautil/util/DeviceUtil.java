@@ -4,13 +4,10 @@ import android.annotation.SuppressLint;
 import android.media.MediaCodecInfo;
 import android.media.MediaCodecList;
 import android.os.Build;
-import android.util.Log;
-import android.util.Range;
 
 import com.yetote.mediautil.bean.CodecInfoBean;
 import com.yetote.mediautil.bean.HwBean;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 

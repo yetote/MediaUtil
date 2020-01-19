@@ -16,7 +16,7 @@ import com.yetote.mediautil.interfaces.OnClick;
 import java.util.ArrayList;
 import java.util.List;
 
-public class HwRvAdapter extends RecyclerView.Adapter {
+public class HwRvAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private Context context;
     private List<HwBean> list;
     private OnClick<HwBean> onClick;
