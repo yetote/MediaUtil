@@ -80,6 +80,7 @@
         android:layout_marginTop="8dp"
         android:layout_marginEnd="16dp"
         android:hint="@string/hint_width"
+        android:inputType="numberSigned"
         app:layout_constraintEnd_toStartOf="@+id/guideline"
         app:layout_constraintStart_toEndOf="@+id/yuv_codec_name_width_tv"
         app:layout_constraintTop_toBottomOf="@+id/yuv_codec_name_spinner" />
@@ -102,6 +103,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:hint="@string/hint_height"
+        android:inputType="numberSigned"
         app:layout_constraintEnd_toEndOf="@+id/yuv_codec_name_help"
         app:layout_constraintStart_toEndOf="@+id/yuv_codec_name_height_tv"
         app:layout_constraintTop_toBottomOf="@+id/yuv_codec_name_help" />

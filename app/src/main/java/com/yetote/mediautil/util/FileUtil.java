@@ -15,6 +15,10 @@ public class FileUtil {
     private static FileInputStream inputStream;
     private static final String TAG = "FileUtil";
     private static ByteBuffer byteBuffer;
+    private static final int FILE_STATE_PREPARED = 0x0001;
+    private static final int FILE_STATE_CLOSED = 0x0002;
+    public static int FILE_STATE = -1;
+
 
     public static boolean prepare(String path) {
         if (path == null) {
@@ -31,9 +35,10 @@ public class FileUtil {
             fileChannel = inputStream.getChannel();
         } catch (FileNotFoundException e) {
             e.printStackTrace();
-        } finally {
+            Log.e(TAG, "prepare: 异常" + e.toString());
             close();
         }
+        FILE_STATE = FILE_STATE_PREPARED;
         return true;
     }
 
@@ -48,13 +53,21 @@ public class FileUtil {
             Log.e(TAG, "read: 未进行初始化");
             return false;
         }
-
-        for (byte[] dataArr : arrays) {
-
+        try {
+            for (byte[] dataArr : arrays) {
+                if (byteBuffer.limit() - byteBuffer.position() < dataArr.length) {
+                    fileChannel.read(byteBuffer);
+                    byteBuffer.flip();
+                }
+                byteBuffer.get(dataArr);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
         }
+        return true;
     }
 
-    private static void close() {
+    public static void close() {
         try {
             if (fileChannel != null) {
                 fileChannel.close();
@@ -63,8 +76,15 @@ public class FileUtil {
             if (inputStream != null) {
                 inputStream.close();
             }
+
+            if (byteBuffer != null) {
+                byteBuffer.clear();
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
+        FILE_STATE = FILE_STATE_CLOSED;
+        Log.e(TAG, "close: 销毁FileUtil");
     }
+
 }

@@ -13,6 +13,7 @@ import android.content.pm.PackageManager;
 import android.media.Image;
 import android.opengl.GLSurfaceView;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -22,6 +23,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.yetote.mediautil.util.AndroidFileUtil;
+import com.yetote.mediautil.util.FileUtil;
+
+import java.nio.channels.FileChannel;
 
 import static android.content.pm.PackageManager.PERMISSION_DENIED;
 
@@ -37,6 +41,7 @@ public class YUVActivity extends AppCompatActivity {
     private GLSurfaceView frameData;
     private ImageView helpIv;
     private RecyclerView rv;
+    private static final String TAG = "YUVActivity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,10 +50,21 @@ public class YUVActivity extends AppCompatActivity {
         initView();
 
         chooseFileBtn.setOnClickListener(v -> {
-            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) == PERMISSION_DENIED) {
-                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, PERMISSION_READ_FILE_CODE);
+            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PERMISSION_DENIED) {
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, PERMISSION_READ_FILE_CODE);
             } else {
                 chooseFile();
+            }
+        });
+
+        parseBtn.setOnClickListener(v -> {
+            int size = 3 * (Integer.parseInt(widthEt.getText().toString())) * (Integer.parseInt(heightEt.getText().toString())) / 2;
+            byte[] ydata = new byte[size / 2];
+            byte[] udata = new byte[size / 4];
+            byte[] vdata = new byte[size / 4];
+            if (FileUtil.prepare(pathTv.getText().toString(), size)) {
+                FileUtil.read(ydata, udata, vdata);
+                Log.e(TAG, "onCreate: ");
             }
         });
     }
@@ -76,7 +92,7 @@ public class YUVActivity extends AppCompatActivity {
 
     private void chooseFile() {
         Intent i = new Intent(Intent.ACTION_GET_CONTENT);
-        i.setType("video/*");
+        i.setType("file/*");
         i.addCategory(Intent.CATEGORY_OPENABLE);
         startActivityForResult(Intent.createChooser(i, "Select a File to Upload"), FILE_SELECT_CODE);
     }
@@ -108,4 +124,9 @@ public class YUVActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        FileUtil.close();
+    }
 }
