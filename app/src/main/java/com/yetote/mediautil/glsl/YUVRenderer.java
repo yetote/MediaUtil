@@ -41,6 +41,7 @@ public class YUVRenderer implements GLSurfaceView.Renderer {
     public static final int SHOW_U = 0X0010;
     public static final int SHOW_V = 0X0100;
     private int flag = 0;
+    private int glWidth, glHeight;
 
     public YUVRenderer(Context context) {
         this.context = context;
@@ -48,7 +49,7 @@ public class YUVRenderer implements GLSurfaceView.Renderer {
 
     @Override
     public void onSurfaceCreated(GL10 gl, EGLConfig config) {
-        glClearColor(1, 1, 1, 0);
+        glClearColor(0, 0, 0, 0);
         yuvObj = new YUVObj();
         program = new YUVProgram(context);
         YUVHelper.loadTexture(textures);
@@ -58,6 +59,8 @@ public class YUVRenderer implements GLSurfaceView.Renderer {
     @Override
     public void onSurfaceChanged(GL10 gl, int width, int height) {
         glViewport(0, 0, width, height);
+        glWidth = width;
+        glHeight = height;
         Log.e(TAG, "onSurfaceChanged: ");
     }
 
@@ -106,6 +109,12 @@ public class YUVRenderer implements GLSurfaceView.Renderer {
         if (arr[0] == -1) {
             return false;
         }
+
+        if (program == null) {
+            Log.e(TAG, "prepare: program未初始化");
+            return false;
+        }
+        resetResolution(w, h);
         yData = ByteBuffer.allocate(arr[0]).order(ByteOrder.nativeOrder());
         uData = ByteBuffer.allocate(arr[1]).order(ByteOrder.nativeOrder());
         vData = ByteBuffer.allocate(arr[2]).order(ByteOrder.nativeOrder());
@@ -125,7 +134,20 @@ public class YUVRenderer implements GLSurfaceView.Renderer {
         yNullData.put(yNull);
         uNullData.put(uNull);
         vNullData.put(vNull);
+
         return true;
+    }
+
+    private void resetResolution(int w, int h) {
+
+        float glWidthHeightRatio = (float) glWidth / (float) glHeight;
+        float videoWidthHeightRatio = (float) w / (float) h;
+        Log.e(TAG, "resetResolution: gl宽高比" + glWidthHeightRatio);
+        Log.e(TAG, "resetResolution: 视频宽高比" + videoWidthHeightRatio);
+
+        float changeH = videoWidthHeightRatio * glWidthHeightRatio;
+        program.sexPixel(w, h);
+        yuvObj.changeRatio(changeH);
     }
 
 }

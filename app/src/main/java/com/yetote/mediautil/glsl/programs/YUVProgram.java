@@ -1,6 +1,7 @@
 package com.yetote.mediautil.glsl.programs;
 
 import android.content.Context;
+import android.util.Log;
 
 import com.yetote.mediautil.R;
 
@@ -28,6 +29,7 @@ public class YUVProgram extends ShaderProgram {
     private static final String TAG = "RectProgram";
     private static int[] yuvLocation;
     private static final int[] YUV_TEXTURE_ID = {GL_TEXTURE0, GL_TEXTURE1, GL_TEXTURE2};
+    private int width, height;
 
     public YUVProgram(Context context) {
         super(context, R.raw.yuv_vertex_shader, R.raw.yuv_frag_shader);
@@ -48,14 +50,27 @@ public class YUVProgram extends ShaderProgram {
         return aTexCoordLocation;
     }
 
+    public void sexPixel(int w, int h) {
+        this.width = w;
+        this.height = h;
+    }
+
     public void setUniform(int textureId, Buffer buffer, int type) {
+        if (width == 0 || height == 0) {
+            Log.e(TAG, "setUniform: 未设置分辨率");
+            return;
+        }
+        if (buffer == null) {
+            Log.e(TAG, "setUniform: 数据为null，无法加载");
+            return;
+        }
         buffer.position(0);
         glActiveTexture(GL_TEXTURE0 + type);
         glBindTexture(GL_TEXTURE_2D, textureId);
         if (type == 0) {
-            glTexImage2D(GL_TEXTURE_2D, 0, GL_LUMINANCE, 320, 240, 0, GL_LUMINANCE, GL_UNSIGNED_BYTE, buffer);
+            glTexImage2D(GL_TEXTURE_2D, 0, GL_LUMINANCE, width, height, 0, GL_LUMINANCE, GL_UNSIGNED_BYTE, buffer);
         } else {
-            glTexImage2D(GL_TEXTURE_2D, 0, GL_LUMINANCE, 320 / 2, 240 / 2, 0, GL_LUMINANCE, GL_UNSIGNED_BYTE, buffer);
+            glTexImage2D(GL_TEXTURE_2D, 0, GL_LUMINANCE, width / 2, height / 2, 0, GL_LUMINANCE, GL_UNSIGNED_BYTE, buffer);
         }
         glUniform1i(yuvLocation[type], type);
     }

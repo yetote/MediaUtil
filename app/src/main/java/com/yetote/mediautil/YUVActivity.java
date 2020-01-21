@@ -66,15 +66,30 @@ public class YUVActivity extends AppCompatActivity {
         });
 
         parseBtn.setOnClickListener(v -> {
-            Log.e(TAG, "onCreate: " + yuvFlag);
-            renderer.prepare(Integer.parseInt(widthEt.getText().toString()), Integer.parseInt(heightEt.getText().toString()), yuvFlag);
+            if (pathTv.getText().toString().isEmpty()) {
+                Toast.makeText(this, "请选择文件", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            if (!pathTv.getText().toString().endsWith("yuv")) {
+                Toast.makeText(this, "该功能仅支持YUV文件", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            if (widthEt.getText().toString().isEmpty() || heightEt.getText().toString().isEmpty()) {
+                Toast.makeText(this, "请填写视频宽高", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            if (!renderer.prepare(Integer.parseInt(widthEt.getText().toString()), Integer.parseInt(heightEt.getText().toString()), yuvFlag)) {
+                Log.e(TAG, "onCreate: prepare renderer失败");
+                return;
+            }
             if (FileUtil.prepare(pathTv.getText().toString())) {
                 int size = (Integer.parseInt(widthEt.getText().toString())) * (Integer.parseInt(heightEt.getText().toString()));
                 byte[] ydata = new byte[size];
                 byte[] udata = new byte[size / 4];
                 byte[] vdata = new byte[size / 4];
                 FileUtil.read(ydata, udata, vdata);
-                Log.e(TAG, "onCreate: " + Arrays.toString(udata));
                 renderer.obtainYUVData(ydata, udata, vdata);
                 frameData.requestRender();
             }
@@ -100,14 +115,14 @@ public class YUVActivity extends AppCompatActivity {
 
     private void init() {
         renderer = new YUVRenderer(this);
-//        frameData = new GLSurfaceView(this);
+
         frameData.setEGLConfigChooser(8, 8, 8, 8, 16, 0);
         frameData.setEGLContextClientVersion(2);
-//        Log.e(TAG, "onCreate: " + path);
-
         frameData.setRenderer(renderer);
         frameData.setRenderMode(GLSurfaceView.RENDERMODE_WHEN_DIRTY);
+
         rv.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
+
         codecNameSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
@@ -156,8 +171,6 @@ public class YUVActivity extends AppCompatActivity {
                 renderer.setShowFlag(YUVRenderer.SHOW_Y | YUVRenderer.SHOW_U | YUVRenderer.SHOW_V);
             }
         });
-
-
     }
 
     private void chooseFile() {
