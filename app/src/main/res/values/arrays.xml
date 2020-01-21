@@ -1,10 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string-array name="codec_name">
-        <item>C语言</item>
+        <item>YUV420P</item>
         <item>Java </item>
         <item>C#</item>
         <item>PHP</item>
         <item>HTML</item>
+    </string-array>
+
+    <string-array name="show_type">
+        <item>YUV</item>
+        <item>Y</item>
+        <item>U</item>
+        <item>V</item>
+        <item>YU</item>
+        <item>YV</item>
+        <item>UV</item>
     </string-array>
 </resources>

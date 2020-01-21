@@ -53,12 +53,18 @@ public class FileUtil {
             Log.e(TAG, "read: 未进行初始化");
             return false;
         }
+        if (byteBuffer == null) {
+            int length = 0;
+            for (byte[] arr : arrays) {
+                length += arr.length;
+            }
+            byteBuffer = ByteBuffer.allocate(length).order(ByteOrder.nativeOrder());
+        }
         try {
+            fileChannel.read(byteBuffer);
+            byteBuffer.flip();
             for (byte[] dataArr : arrays) {
-                if (byteBuffer.limit() - byteBuffer.position() < dataArr.length) {
-                    fileChannel.read(byteBuffer);
-                    byteBuffer.flip();
-                }
+                Log.e(TAG, "read: buffer 容量" + byteBuffer.limit());
                 byteBuffer.get(dataArr);
             }
         } catch (IOException e) {

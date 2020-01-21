@@ -16,4 +16,5 @@
     <string name="hint_height">请输入高度</string>
     <string name="width">宽度</string>
     <string name="height">高度</string>
+    <string name="show_type">展示数据</string>
 </resources>

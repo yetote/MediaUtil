@@ -14,6 +14,8 @@ import android.media.Image;
 import android.opengl.GLSurfaceView;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -22,10 +24,13 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.yetote.mediautil.glsl.YUVRenderer;
 import com.yetote.mediautil.util.AndroidFileUtil;
 import com.yetote.mediautil.util.FileUtil;
+import com.yetote.mediautil.util.yuvutil.YUVUtil;
 
 import java.nio.channels.FileChannel;
+import java.util.Arrays;
 
 import static android.content.pm.PackageManager.PERMISSION_DENIED;
 
@@ -35,13 +40,16 @@ public class YUVActivity extends AppCompatActivity {
     private Button chooseFileBtn;
     private Button parseBtn;
     private TextView pathTv;
-    private Spinner spinner;
+    private Spinner codecNameSpinner, showTypeSpinner;
     private EditText widthEt, heightEt;
     private ImageView front, behind;
     private GLSurfaceView frameData;
     private ImageView helpIv;
     private RecyclerView rv;
     private static final String TAG = "YUVActivity";
+    private YUVRenderer renderer;
+    private YUVUtil.YUV_TYPE yuvFlag;
+    private int showFlag = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,13 +66,17 @@ public class YUVActivity extends AppCompatActivity {
         });
 
         parseBtn.setOnClickListener(v -> {
-            int size = 3 * (Integer.parseInt(widthEt.getText().toString())) * (Integer.parseInt(heightEt.getText().toString())) / 2;
-            byte[] ydata = new byte[size / 2];
-            byte[] udata = new byte[size / 4];
-            byte[] vdata = new byte[size / 4];
-            if (FileUtil.prepare(pathTv.getText().toString(), size)) {
+            Log.e(TAG, "onCreate: " + yuvFlag);
+            renderer.prepare(Integer.parseInt(widthEt.getText().toString()), Integer.parseInt(heightEt.getText().toString()), yuvFlag);
+            if (FileUtil.prepare(pathTv.getText().toString())) {
+                int size = (Integer.parseInt(widthEt.getText().toString())) * (Integer.parseInt(heightEt.getText().toString()));
+                byte[] ydata = new byte[size];
+                byte[] udata = new byte[size / 4];
+                byte[] vdata = new byte[size / 4];
                 FileUtil.read(ydata, udata, vdata);
-                Log.e(TAG, "onCreate: ");
+                Log.e(TAG, "onCreate: " + Arrays.toString(udata));
+                renderer.obtainYUVData(ydata, udata, vdata);
+                frameData.requestRender();
             }
         });
     }
@@ -73,7 +85,8 @@ public class YUVActivity extends AppCompatActivity {
         chooseFileBtn = findViewById(R.id.yuv_choose_btn);
         parseBtn = findViewById(R.id.yuv_parse_btn);
         pathTv = findViewById(R.id.yuv_path_et);
-        spinner = findViewById(R.id.yuv_codec_name_spinner);
+        codecNameSpinner = findViewById(R.id.yuv_codec_name_spinner);
+        showTypeSpinner = findViewById(R.id.yuv_show_type_spinner);
         helpIv = findViewById(R.id.yuv_codec_name_help);
         widthEt = findViewById(R.id.yuv_codec_name_width_et);
         heightEt = findViewById(R.id.yuv_codec_name_height_et);
@@ -86,7 +99,64 @@ public class YUVActivity extends AppCompatActivity {
     }
 
     private void init() {
+        renderer = new YUVRenderer(this);
+//        frameData = new GLSurfaceView(this);
+        frameData.setEGLConfigChooser(8, 8, 8, 8, 16, 0);
+        frameData.setEGLContextClientVersion(2);
+//        Log.e(TAG, "onCreate: " + path);
+
+        frameData.setRenderer(renderer);
+        frameData.setRenderMode(GLSurfaceView.RENDERMODE_WHEN_DIRTY);
         rv.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
+        codecNameSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                Log.e(TAG, "onItemSelected: " + getResources().getStringArray(R.array.codec_name)[position]);
+                switch (getResources().getStringArray(R.array.codec_name)[position]) {
+                    case "YUV420P":
+                        yuvFlag = YUVUtil.YUV_TYPE.YUV_420P;
+                        break;
+                    default:
+                        break;
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+                yuvFlag = YUVUtil.YUV_TYPE.YUV_420P;
+                Log.e(TAG, "onNothingSelected: ");
+            }
+        });
+
+        showTypeSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                String s = getResources().getStringArray(R.array.show_type)[position];
+                showFlag = 0;
+                for (char c : s.toCharArray()) {
+                    if (c == 'Y') {
+                        showFlag |= YUVRenderer.SHOW_Y;
+                    }
+                    if (c == 'U') {
+                        showFlag |= YUVRenderer.SHOW_U;
+                    }
+                    if (c == 'V') {
+                        showFlag |= YUVRenderer.SHOW_V;
+                    }
+                }
+                if (renderer != null) {
+                    renderer.setShowFlag(showFlag);
+                    frameData.requestRender();
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+                Log.e(TAG, "onNothingSelected: noThing select");
+                renderer.setShowFlag(YUVRenderer.SHOW_Y | YUVRenderer.SHOW_U | YUVRenderer.SHOW_V);
+            }
+        });
+
 
     }
 
