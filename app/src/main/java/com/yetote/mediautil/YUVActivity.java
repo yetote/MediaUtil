@@ -33,6 +33,13 @@ import java.nio.channels.FileChannel;
 import java.util.Arrays;
 
 import static android.content.pm.PackageManager.PERMISSION_DENIED;
+import static com.yetote.mediautil.util.FileUtil.FILE_STATE_CLOSED;
+import static com.yetote.mediautil.util.FileUtil.FILE_STATE_END;
+import static com.yetote.mediautil.util.FileUtil.FILE_STATE_PREPARED;
+import static com.yetote.mediautil.util.FileUtil.FILE_STATE_READING;
+import static com.yetote.mediautil.util.FileUtil.FILE_STATE_START;
+import static com.yetote.mediautil.util.FileUtil.FILE_STATE_UN_EXIST;
+import static com.yetote.mediautil.util.FileUtil.FILE_STATE_UN_PREPARED;
 
 public class YUVActivity extends AppCompatActivity {
     private static final int PERMISSION_READ_FILE_CODE = 0x0001;
@@ -50,6 +57,10 @@ public class YUVActivity extends AppCompatActivity {
     private YUVRenderer renderer;
     private YUVUtil.YUV_TYPE yuvFlag;
     private int showFlag = 0;
+    byte[] ydata;
+    byte[] udata;
+    byte[] vdata;
+    private int pos;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -84,17 +95,38 @@ public class YUVActivity extends AppCompatActivity {
                 Log.e(TAG, "onCreate: prepare renderer失败");
                 return;
             }
-            if (FileUtil.prepare(pathTv.getText().toString())) {
+            if (checkFileState(FileUtil.prepare(pathTv.getText().toString()))) {
                 int size = (Integer.parseInt(widthEt.getText().toString())) * (Integer.parseInt(heightEt.getText().toString()));
-                byte[] ydata = new byte[size];
-                byte[] udata = new byte[size / 4];
-                byte[] vdata = new byte[size / 4];
-                FileUtil.read(ydata, udata, vdata);
+                ydata = new byte[size];
+                udata = new byte[size / 4];
+                vdata = new byte[size / 4];
+                pos = 0;
+                FileUtil.read(pos, ydata, udata, vdata);
+                renderer.obtainYUVData(ydata, udata, vdata);
+                frameData.requestRender();
+            }
+        });
+
+        front.setOnClickListener(V -> {
+            pos -= yuvSize();
+            if (checkFileState(FileUtil.read(pos, ydata, udata, vdata))) {
+                FileUtil.read(pos, ydata, udata, vdata);
+                renderer.obtainYUVData(ydata, udata, vdata);
+                frameData.requestRender();
+            }
+        });
+
+        behind.setOnClickListener(v -> {
+            pos += yuvSize();
+            Log.e(TAG, "onCreate: " + pos);
+            if (checkFileState(FileUtil.read(pos, ydata, udata, vdata))) {
+                FileUtil.read(pos, ydata, udata, vdata);
                 renderer.obtainYUVData(ydata, udata, vdata);
                 frameData.requestRender();
             }
         });
     }
+
 
     private void initView() {
         chooseFileBtn = findViewById(R.id.yuv_choose_btn);
@@ -180,6 +212,39 @@ public class YUVActivity extends AppCompatActivity {
         startActivityForResult(Intent.createChooser(i, "Select a File to Upload"), FILE_SELECT_CODE);
     }
 
+    private int yuvSize() {
+        return ydata.length + udata.length + vdata.length;
+    }
+
+    private boolean checkFileState(int fileState) {
+        switch (fileState) {
+            case FILE_STATE_PREPARED:
+                Toast.makeText(this, "准备成功", Toast.LENGTH_SHORT).show();
+                return true;
+            case FILE_STATE_CLOSED:
+                Toast.makeText(this, "已关闭", Toast.LENGTH_SHORT).show();
+                return false;
+            case FILE_STATE_UN_PREPARED:
+                Toast.makeText(this, "准备失败", Toast.LENGTH_SHORT).show();
+                return false;
+            case FILE_STATE_UN_EXIST:
+                Toast.makeText(this, "文件不存在", Toast.LENGTH_SHORT).show();
+                return false;
+            case FILE_STATE_END:
+                Toast.makeText(this, "文件已读至末尾", Toast.LENGTH_SHORT).show();
+                return false;
+            case FILE_STATE_START:
+                Toast.makeText(this, "文件以到达起点", Toast.LENGTH_SHORT).show();
+                return false;
+            case FILE_STATE_READING:
+                Log.e(TAG, "checkFileState: 文件正常阅读");
+                return true;
+            default:
+                Log.e(TAG, "checkFileState: 未定义状态");
+                return false;
+        }
+    }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -209,7 +274,7 @@ public class YUVActivity extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
-        super.onDestroy();
         FileUtil.close();
+        super.onDestroy();
     }
 }

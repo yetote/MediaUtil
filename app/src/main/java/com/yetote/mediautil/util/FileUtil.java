@@ -9,26 +9,35 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.channels.FileChannel;
+import java.util.Arrays;
 
 public class FileUtil {
     private static FileChannel fileChannel;
     private static FileInputStream inputStream;
     private static final String TAG = "FileUtil";
     private static ByteBuffer byteBuffer;
-    private static final int FILE_STATE_PREPARED = 0x0001;
-    private static final int FILE_STATE_CLOSED = 0x0002;
+    public static final int FILE_STATE_PREPARED = 0x0001;
+    public static final int FILE_STATE_CLOSED = 0x0002;
+
+    public static final int FILE_STATE_UN_PREPARED = 0x0003;
+    public static final int FILE_STATE_UN_EXIST = 0x0004;
+
+    public static final int FILE_STATE_END = 0x0005;
+    public static final int FILE_STATE_START = 0x0006;
+
+    public static final int FILE_STATE_READING = 0x0007;
     public static int FILE_STATE = -1;
 
 
-    public static boolean prepare(String path) {
+    public static int prepare(String path) {
         if (path == null) {
             Log.e(TAG, "prepare: path为null");
-            return false;
+            return FILE_STATE_UN_PREPARED;
         }
         File file = new File(path);
         if (!file.exists()) {
             Log.e(TAG, "prepare: 文件不存在");
-            return false;
+            return FILE_STATE_UN_EXIST;
         }
         try {
             inputStream = new FileInputStream(path);
@@ -39,19 +48,19 @@ public class FileUtil {
             close();
         }
         FILE_STATE = FILE_STATE_PREPARED;
-        return true;
+        return FILE_STATE;
     }
 
-    public static boolean prepare(String path, int size) {
+    public static int prepare(String path, int size) {
         byteBuffer = ByteBuffer.allocate(size).order(ByteOrder.nativeOrder());
         return prepare(path);
     }
 
 
-    public static boolean read(byte[]... arrays) {
+    public static int read(int pos, byte[]... arrays) {
         if (inputStream == null || fileChannel == null) {
             Log.e(TAG, "read: 未进行初始化");
-            return false;
+            return FILE_STATE_UN_PREPARED;
         }
         if (byteBuffer == null) {
             int length = 0;
@@ -60,17 +69,30 @@ public class FileUtil {
             }
             byteBuffer = ByteBuffer.allocate(length).order(ByteOrder.nativeOrder());
         }
+
         try {
+            if (pos >= fileChannel.size()) {
+                return FILE_STATE_END;
+            }
+            if (pos < 0) {
+                return FILE_STATE_START;
+            }
+            byteBuffer.clear();
+            fileChannel.position(pos);
+            Log.e(TAG, "read: " + fileChannel.position());
             fileChannel.read(byteBuffer);
             byteBuffer.flip();
             for (byte[] dataArr : arrays) {
                 Log.e(TAG, "read: buffer 容量" + byteBuffer.limit());
                 byteBuffer.get(dataArr);
+                Log.e(TAG, "read: " + Arrays.toString(dataArr));
             }
         } catch (IOException e) {
+            Log.e(TAG, "read: " + e.toString());
             e.printStackTrace();
         }
-        return true;
+
+        return FILE_STATE_READING;
     }
 
     public static void close() {
