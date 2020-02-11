@@ -11,8 +11,10 @@ import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.media.Image;
+import android.media.MediaPlayer;
 import android.opengl.GLSurfaceView;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
@@ -67,7 +69,7 @@ public class YUVActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_yuv);
         initView();
-
+        MediaPlayer
         chooseFileBtn.setOnClickListener(v -> {
             if (ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PERMISSION_DENIED) {
                 ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, PERMISSION_READ_FILE_CODE);
@@ -91,6 +93,7 @@ public class YUVActivity extends AppCompatActivity {
                 Toast.makeText(this, "请填写视频宽高", Toast.LENGTH_SHORT).show();
                 return;
             }
+            
             if (!renderer.prepare(Integer.parseInt(widthEt.getText().toString()), Integer.parseInt(heightEt.getText().toString()), yuvFlag)) {
                 Log.e(TAG, "onCreate: prepare renderer失败");
                 return;

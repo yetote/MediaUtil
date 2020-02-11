@@ -148,6 +148,7 @@ public class YUVRenderer implements GLSurfaceView.Renderer {
         float changeH = videoWidthHeightRatio * glWidthHeightRatio;
         program.sexPixel(w, h);
         yuvObj.changeRatio(changeH);
+
     }
 
 }

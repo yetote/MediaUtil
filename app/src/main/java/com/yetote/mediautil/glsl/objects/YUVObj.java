@@ -31,16 +31,17 @@ public class YUVObj {
     }
 
     public void bindData(YUVProgram program) {
+        Log.e(TAG, "bindData: 坐标" + Arrays.toString(vertexData));
         vertexArray.setVertexAttributePointer(0, program.getAttrPositionLocation(), POSITION_COMPONENT_COUNT, STRIDE);
         vertexArray.setVertexAttributePointer(POSITION_COMPONENT_COUNT, program.getAttrTexCoordLocation(), TEXTURE_COMPONENT_COUNT, STRIDE);
     }
 
     public void changeRatio(float changeH) {
-//        int index = 0;
-//        while (index < vertexData.length) {
-//            vertexData[++index] *= changeH;
-//            index += 3;
-//        }
+        int index = 0;
+        while (index < vertexData.length) {
+            vertexData[index] *= changeH;
+            index += 4;
+        }
         Log.e(TAG, "changeRatio: " + Arrays.toString(vertexData));
     }
 

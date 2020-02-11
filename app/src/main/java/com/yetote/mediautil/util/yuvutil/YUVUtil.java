@@ -1,6 +1,14 @@
 package com.yetote.mediautil.util.yuvutil;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.ImageFormat;
+import android.graphics.Rect;
+import android.graphics.YuvImage;
 import android.util.Log;
+
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 
 public class YUVUtil {
     private static final String TAG = "YUVUtil";
@@ -44,4 +52,18 @@ public class YUVUtil {
         return arr;
     }
 
+    public static Bitmap yuv2bitmap(int w, int h, byte[] yuv) {
+        YuvImage image = new YuvImage(yuv, ImageFormat.YUV_420_888, w, h, null);
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        image.compressToJpeg(new Rect(0, 0, w, h), 80, stream);
+
+        Bitmap bmp = BitmapFactory.decodeByteArray(stream.toByteArray(), 0, stream.size());
+        //TODO：此处可以对位图进行处理，如显示，保存等
+        try {
+            stream.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return bmp;
+    }
 }
