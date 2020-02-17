@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="10dp"
+    tools:context=".EncodeAudioActivity">
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.5" />
+
+    <include
+        android:id="@+id/encode_audio_choose_path_layout"
+        layout="@layout/layout_choose_file"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/encode_audio_mode_tv"
+        style="@style/CodecInfoTextViewStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/encode_type"
+        app:layout_constraintStart_toStartOf="@+id/encode_audio_choose_path_layout"
+        app:layout_constraintTop_toBottomOf="@+id/encode_audio_choose_path_layout" />
+
+    <Spinner
+        android:id="@+id/encode_audio_mode_spinner"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:entries="@array/codec_mode_arr"
+        app:layout_constraintBottom_toBottomOf="@+id/encode_audio_mode_tv"
+        app:layout_constraintEnd_toStartOf="@+id/guideline2"
+        app:layout_constraintStart_toEndOf="@+id/encode_audio_mode_tv"
+        app:layout_constraintTop_toBottomOf="@+id/encode_audio_choose_path_layout" />
+
+    <TextView
+        android:id="@+id/encode_audio_data_mode_tv"
+        style="@style/CodecInfoTextViewStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/api_type"
+        app:layout_constraintStart_toStartOf="@+id/guideline2"
+        app:layout_constraintTop_toBottomOf="@+id/encode_audio_choose_path_layout" />
+
+    <Spinner
+        android:id="@+id/encode_audio_data_mode_spinner"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:entries="@array/data_transmission_arr"
+        app:layout_constraintBottom_toBottomOf="@+id/encode_audio_data_mode_tv"
+        app:layout_constraintEnd_toEndOf="@+id/encode_audio_choose_path_layout"
+        app:layout_constraintStart_toEndOf="@+id/encode_audio_data_mode_tv"
+        app:layout_constraintTop_toTopOf="@+id/encode_audio_data_mode_tv" />
+
+    <TextView
+        android:id="@+id/encode_audio_channelLayout_tv"
+        style="@style/CodecInfoTextViewStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/channel_layout"
+        app:layout_constraintStart_toStartOf="@+id/encode_audio_mode_tv"
+        app:layout_constraintTop_toBottomOf="@+id/encode_audio_mode_tv" />
+
+    <Spinner
+        android:id="@+id/encode_audio_channelLayout_spinner"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:entries="@array/channel_layout_arr"
+        app:layout_constraintBottom_toBottomOf="@+id/encode_audio_channelLayout_tv"
+        app:layout_constraintEnd_toStartOf="@+id/guideline2"
+        app:layout_constraintStart_toEndOf="@+id/encode_audio_channelLayout_tv"
+        app:layout_constraintTop_toBottomOf="@+id/encode_audio_mode_tv" />
+
+    <TextView
+        android:id="@+id/encode_audio_sampleRate_tv"
+        style="@style/CodecInfoTextViewStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/sample_rate"
+        app:layout_constraintStart_toStartOf="@+id/guideline2"
+        app:layout_constraintTop_toBottomOf="@+id/encode_audio_data_mode_tv" />
+
+    <Spinner
+        android:id="@+id/encode_audio_sampleRate_spinner"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:entries="@array/sample_rate_arr"
+        app:layout_constraintBottom_toBottomOf="@+id/encode_audio_sampleRate_tv"
+        app:layout_constraintEnd_toEndOf="@+id/encode_audio_data_mode_spinner"
+        app:layout_constraintStart_toEndOf="@+id/encode_audio_sampleRate_tv"
+        app:layout_constraintTop_toTopOf="@+id/encode_audio_sampleRate_tv" />
+
+    <TextView
+        android:id="@+id/encode_audio_mutex_type_tv"
+        style="@style/CodecInfoTextViewStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/eccodec_format"
+        app:layout_constraintStart_toStartOf="@+id/encode_audio_channelLayout_tv"
+        app:layout_constraintTop_toBottomOf="@+id/encode_audio_channelLayout_spinner" />
+
+    <Button
+        android:id="@+id/encode_audio_choose_format_btn"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="@color/transparent"
+        android:text="@string/pause_to_choose_encodec_formnat"
+        app:layout_constraintBottom_toBottomOf="@+id/encode_audio_mutex_type_tv"
+        app:layout_constraintEnd_toStartOf="@+id/guideline2"
+        app:layout_constraintStart_toEndOf="@+id/encode_audio_mutex_type_tv"
+        app:layout_constraintTop_toTopOf="@+id/encode_audio_mutex_type_tv" />
+
+    <TextView
+        android:id="@+id/encode_audio_choose_codec_tv"
+        style="@style/CodecInfoTextViewStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/encodec_name"
+        app:layout_constraintStart_toStartOf="@+id/guideline2"
+        app:layout_constraintTop_toBottomOf="@+id/encode_audio_sampleRate_tv" />
+
+    <Button
+        android:id="@+id/encode_audio_choose_codec_btn"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="@color/transparent"
+        android:text="@string/pause_to_choose_encodec"
+        app:layout_constraintBottom_toBottomOf="@+id/encode_audio_choose_codec_tv"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/encode_audio_choose_codec_tv"
+        app:layout_constraintTop_toTopOf="@+id/encode_audio_choose_codec_tv" />
+
+
+    <Button
+        android:id="@+id/encode_audio_parse_btn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:background="@color/colorPrimary"
+        android:gravity="center"
+        android:text="@string/encode"
+        android:textColor="@color/white"
+        android:textSize="16sp"
+        app:layout_constraintEnd_toEndOf="@+id/encode_audio_sampleRate_spinner"
+        app:layout_constraintStart_toStartOf="@+id/encode_audio_channelLayout_tv"
+        app:layout_constraintTop_toBottomOf="@+id/encode_audio_mutex_type_tv" />
+</androidx.constraintlayout.widget.ConstraintLayout>

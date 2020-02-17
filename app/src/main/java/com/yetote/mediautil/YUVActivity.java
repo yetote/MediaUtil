@@ -47,8 +47,8 @@ public class YUVActivity extends AppCompatActivity {
     private static final int PERMISSION_READ_FILE_CODE = 0x0001;
     private static final int FILE_SELECT_CODE = 0x1001;
     private Button chooseFileBtn;
-    private Button parseBtn;
     private TextView pathTv;
+    private Button parseBtn;
     private Spinner codecNameSpinner, showTypeSpinner;
     private EditText widthEt, heightEt;
     private ImageView front, behind;
@@ -69,7 +69,6 @@ public class YUVActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_yuv);
         initView();
-        MediaPlayer
         chooseFileBtn.setOnClickListener(v -> {
             if (ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PERMISSION_DENIED) {
                 ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, PERMISSION_READ_FILE_CODE);
@@ -93,7 +92,7 @@ public class YUVActivity extends AppCompatActivity {
                 Toast.makeText(this, "请填写视频宽高", Toast.LENGTH_SHORT).show();
                 return;
             }
-            
+
             if (!renderer.prepare(Integer.parseInt(widthEt.getText().toString()), Integer.parseInt(heightEt.getText().toString()), yuvFlag)) {
                 Log.e(TAG, "onCreate: prepare renderer失败");
                 return;
@@ -132,9 +131,9 @@ public class YUVActivity extends AppCompatActivity {
 
 
     private void initView() {
-        chooseFileBtn = findViewById(R.id.yuv_choose_btn);
+        chooseFileBtn = findViewById(R.id.layout_choose_file_choose_btn);
+        pathTv = findViewById(R.id.layout_choose_file_path_et);
         parseBtn = findViewById(R.id.yuv_parse_btn);
-        pathTv = findViewById(R.id.yuv_path_et);
         codecNameSpinner = findViewById(R.id.yuv_codec_name_spinner);
         showTypeSpinner = findViewById(R.id.yuv_show_type_spinner);
         helpIv = findViewById(R.id.yuv_codec_name_help);
@@ -161,8 +160,8 @@ public class YUVActivity extends AppCompatActivity {
         codecNameSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                Log.e(TAG, "onItemSelected: " + getResources().getStringArray(R.array.codec_name)[position]);
-                switch (getResources().getStringArray(R.array.codec_name)[position]) {
+                Log.e(TAG, "onItemSelected: " + getResources().getStringArray(R.array.codec_name_arr)[position]);
+                switch (getResources().getStringArray(R.array.codec_name_arr)[position]) {
                     case "YUV420P":
                         yuvFlag = YUVUtil.YUV_TYPE.YUV_420P;
                         break;
@@ -181,7 +180,7 @@ public class YUVActivity extends AppCompatActivity {
         showTypeSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                String s = getResources().getStringArray(R.array.show_type)[position];
+                String s = getResources().getStringArray(R.array.show_type_arr)[position];
                 showFlag = 0;
                 for (char c : s.toCharArray()) {
                     if (c == 'Y') {

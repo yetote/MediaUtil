@@ -8,7 +8,7 @@
     <string name="choose">选择文件</string>
     <string name="parse">解析</string>
     <string name="yuv_edit_hint">请选择文件</string>
-    <string name="codec_type">解码方式:</string>
+    <string name="decodec_type">解码方式:</string>
     <string name="hardware_codec">硬解</string>
     <string name="ffmpeg_codec">软解</string>
     <string name="yuv_codec_name">编码类型</string>
@@ -17,4 +17,14 @@
     <string name="width">宽度</string>
     <string name="height">高度</string>
     <string name="show_type">展示数据</string>
+    <string name="encode_type">编码方式</string>
+    <string name="data_transmission_type">数据传输方式</string>
+    <string name="channel_layout">声道数</string>
+    <string name="sample_rate">采样率</string>
+    <string name="encode">编码</string>
+    <string name="api_type">API</string>
+    <string name="eccodec_format">编码格式</string>
+    <string name="pause_to_choose_encodec_formnat">点击选择编码格式</string>
+    <string name="encodec_name">编码器名</string>
+    <string name="pause_to_choose_encodec">点击选择编码器</string>
 </resources>

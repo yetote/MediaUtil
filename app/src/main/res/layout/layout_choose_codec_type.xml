@@ -9,7 +9,7 @@
         android:layout_width="wrap_content"
         android:layout_height="0dp"
         android:gravity="center_vertical"
-        android:text="@string/codec_type"
+        android:text="@string/decodec_type"
         app:layout_constraintBottom_toBottomOf="@+id/layout_choose_codec_radioGroup"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/layout_choose_codec_radioGroup" />

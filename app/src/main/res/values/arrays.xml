@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string-array name="codec_name">
+    <string-array name="codec_name_arr">
         <item>YUV420P</item>
         <item>Java </item>
         <item>C#</item>
@@ -8,7 +8,7 @@
         <item>HTML</item>
     </string-array>
 
-    <string-array name="show_type">
+    <string-array name="show_type_arr">
         <item>YUV</item>
         <item>Y</item>
         <item>U</item>
@@ -16,5 +16,36 @@
         <item>YU</item>
         <item>YV</item>
         <item>UV</item>
+    </string-array>
+
+    <string-array name="channel_layout_arr">
+        <item>单声道</item>
+        <item>双声道</item>
+    </string-array>
+
+
+    <string-array name="sample_rate_arr">
+        <item>8000</item>
+        <item>11025</item>
+        <item>16000</item>
+        <item>22050</item>
+        <item>32000</item>
+        <item>44100</item>
+        <item>48000</item>
+        <item>88200</item>
+        <item>96000</item>
+        <item>176400</item>
+        <item>192000</item>
+        <item>352800</item>
+        <item>384000</item>
+    </string-array>
+
+    <string-array name="codec_mode_arr">
+        <item>硬解</item>
+        <item>软解</item>
+    </string-array>
+    <string-array name="data_transmission_arr">
+        <item>Java</item>
+        <item>Native</item>
     </string-array>
 </resources>

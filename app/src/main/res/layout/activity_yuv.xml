@@ -7,60 +7,46 @@
     android:padding="10dp"
     tools:context=".YUVActivity">
 
-    <TextView
-        android:id="@+id/yuv_path_et"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:gravity="center_vertical"
-        android:hint="@string/yuv_edit_hint"
-        android:maxLines="1"
-        android:paddingStart="5dp"
-        android:singleLine="true"
-        app:layout_constraintBottom_toBottomOf="@+id/yuv_choose_btn"
-        app:layout_constraintEnd_toStartOf="@+id/yuv_choose_btn"
+    <include
+        android:id="@+id/yuv_choose_path_layout"
+        layout="@layout/layout_choose_file"
+        android:layout_width="match_parent"
+
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
-
-    <Button
-        android:id="@+id/yuv_choose_btn"
-        android:layout_width="66dp"
-        android:layout_height="32dp"
-        android:background="@color/mediumseagreen"
-        android:text="@string/choose"
-        android:textColor="@color/white"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
 
     <TextView
         android:id="@+id/yuv_codec_name_tv"
         android:layout_width="wrap_content"
         android:layout_height="40dp"
-        android:layout_marginTop="8dp"
         android:gravity="center_vertical"
         android:paddingStart="5dp"
         android:text="@string/yuv_codec_name"
+        app:layout_constraintBottom_toBottomOf="@+id/yuv_codec_name_spinner"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/yuv_path_et" />
+        app:layout_constraintTop_toTopOf="@+id/yuv_codec_name_spinner" />
 
     <Spinner
         android:id="@+id/yuv_codec_name_spinner"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:entries="@array/codec_name"
-        app:layout_constraintBottom_toBottomOf="@+id/yuv_codec_name_tv"
+        android:entries="@array/codec_name_arr"
+        app:layout_constraintBottom_toBottomOf="@+id/yuv_codec_name_help"
         app:layout_constraintEnd_toStartOf="@+id/yuv_codec_name_help"
         app:layout_constraintStart_toEndOf="@+id/yuv_codec_name_tv"
-        app:layout_constraintTop_toTopOf="@+id/yuv_codec_name_tv" />
+        app:layout_constraintTop_toTopOf="@+id/yuv_codec_name_help" />
 
     <ImageView
         android:id="@+id/yuv_codec_name_help"
         android:layout_width="40dp"
         android:layout_height="40dp"
+        android:layout_marginTop="8dp"
         android:padding="10dp"
         android:src="@drawable/help"
-        app:layout_constraintEnd_toEndOf="@+id/yuv_choose_btn"
-        app:layout_constraintTop_toTopOf="@+id/yuv_codec_name_spinner" />
+        app:layout_constraintEnd_toEndOf="@+id/yuv_choose_path_layout"
+        app:layout_constraintTop_toBottomOf="@+id/yuv_choose_path_layout" />
 
     <TextView
         android:id="@+id/yuv_codec_name_width_tv"
@@ -168,8 +154,8 @@
         android:id="@+id/yuv_show_type"
         android:layout_width="wrap_content"
         android:layout_height="0dp"
-        android:paddingStart="5dp"
         android:gravity="center_vertical"
+        android:paddingStart="5dp"
         android:text="@string/show_type"
         app:layout_constraintBottom_toBottomOf="@+id/yuv_show_type_spinner"
         app:layout_constraintStart_toStartOf="@+id/yuv_parse_btn"
@@ -181,7 +167,7 @@
         android:layout_height="40dp"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="16dp"
-        android:entries="@array/show_type"
+        android:entries="@array/show_type_arr"
         app:layout_constraintEnd_toStartOf="@+id/guideline"
         app:layout_constraintStart_toEndOf="@+id/yuv_show_type"
         app:layout_constraintTop_toBottomOf="@+id/yuv_parse_btn" />

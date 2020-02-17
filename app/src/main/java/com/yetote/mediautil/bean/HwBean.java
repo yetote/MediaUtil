@@ -1,9 +1,5 @@
 package com.yetote.mediautil.bean;
 
-import android.text.SpannableStringBuilder;
-
-import java.util.Arrays;
-
 public class HwBean {
     private String codecName;
     private String canonicalName;

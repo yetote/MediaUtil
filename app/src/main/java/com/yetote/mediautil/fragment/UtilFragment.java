@@ -14,13 +14,12 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.yetote.mediautil.EncodeAudioActivity;
 import com.yetote.mediautil.R;
 import com.yetote.mediautil.YUVActivity;
 import com.yetote.mediautil.adapter.UtilRVAdapter;
-import com.yetote.mediautil.interfaces.OnClick;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class UtilFragment extends Fragment {
     private ArrayList<String> list;
@@ -36,11 +35,15 @@ public class UtilFragment extends Fragment {
         rv.addItemDecoration(new DividerItemDecoration(getContext(), DividerItemDecoration.VERTICAL));
         list = new ArrayList<>();
         list.add("YUV");
+        list.add("Encode Audio");
         adapter = new UtilRVAdapter(getContext(), list);
         adapter.setOnClick(s -> {
             switch (s) {
                 case "YUV":
                     startActivity(new Intent(getContext(), YUVActivity.class));
+                    break;
+                case "Encode Audio":
+                    startActivity(new Intent(getContext(), EncodeAudioActivity.class));
                     break;
                 default:
                     Toast.makeText(getContext(), "暂不支持此功能", Toast.LENGTH_SHORT).show();

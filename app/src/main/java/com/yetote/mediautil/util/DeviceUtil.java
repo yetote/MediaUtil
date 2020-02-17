@@ -4,26 +4,43 @@ import android.annotation.SuppressLint;
 import android.media.MediaCodecInfo;
 import android.media.MediaCodecList;
 import android.os.Build;
+import android.util.Log;
 
 import com.yetote.mediautil.bean.CodecInfoBean;
 import com.yetote.mediautil.bean.HwBean;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
+import javax.security.auth.login.LoginException;
 
 import static android.media.MediaCodecList.ALL_CODECS;
 
 public class DeviceUtil {
     private static final String TAG = "DeviceUtil";
-
     public static HwBean[] checkAllCodec() {
         MediaCodecList mediaCodecList = new MediaCodecList(ALL_CODECS);
         MediaCodecInfo[] mediaCodecInfos = mediaCodecList.getCodecInfos();
         HwBean[] hwBeans = new HwBean[mediaCodecInfos.length];
         for (int i = 0; i < mediaCodecInfos.length; i++) {
-            hwBeans[i] = obtainMediaCodecInfo(mediaCodecInfos[i]);
+            hwBeans[i] = obtainMediaCodecInfo(mediaCodecInfos[i], "");
         }
         return hwBeans;
+    }
+
+    public static ArrayList<HwBean> checkAllCodec(String mediaType) {
+        MediaCodecList mediaCodecList = new MediaCodecList(ALL_CODECS);
+        MediaCodecInfo[] mediaCodecInfos = mediaCodecList.getCodecInfos();
+        ArrayList<HwBean> hwBeansList = new ArrayList<>();
+        int j = 0;
+        for (int i = 0; i < mediaCodecInfos.length; i++) {
+            HwBean hwBean = obtainMediaCodecInfo(mediaCodecInfos[i], mediaType);
+            if (hwBean != null) {
+                hwBeansList.add(hwBean);
+            }
+        }
+        return hwBeansList;
     }
 
     public static CodecInfoBean checkCodec(String codecName) {
@@ -38,12 +55,16 @@ public class DeviceUtil {
         return null;
     }
 
-    private static HwBean obtainMediaCodecInfo(MediaCodecInfo mediaCodecInfo) {
+    private static HwBean obtainMediaCodecInfo(MediaCodecInfo mediaCodecInfo, String mediaType) {
         String canonicalName;
         String isSoftwareOnly;
         String isAlias;
         String isHardwareAccelerated;
         String isVendor;
+        if (!mediaCodecInfo.getSupportedTypes()[0].startsWith(mediaType)) {
+            return null;
+        }
+
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q) {
             canonicalName = mediaCodecInfo.getCanonicalName();
             isSoftwareOnly = (mediaCodecInfo.isSoftwareOnly()) ? "是" : "否";
@@ -53,8 +74,8 @@ public class DeviceUtil {
         } else {
             canonicalName = isSoftwareOnly = isAlias = isHardwareAccelerated = isVendor = "无法获取，需要api>=29";
         }
+        String supportedTypes =mediaCodecInfo.getSupportedTypes()[0];
         String codecName = mediaCodecInfo.getName();
-        String supportedTypes = Arrays.toString(mediaCodecInfo.getSupportedTypes());
         String isEncoder = (mediaCodecInfo.isEncoder()) ? "是" : "否";
 
         return new HwBean(codecName, canonicalName, supportedTypes, isAlias, isEncoder, isHardwareAccelerated, isSoftwareOnly, isVendor);
