@@ -19,12 +19,15 @@ import static android.media.MediaCodecList.ALL_CODECS;
 
 public class DeviceUtil {
     private static final String TAG = "DeviceUtil";
+    public static final int CODEC_TYPE_DECODER = 0X0000;
+    public static final int CODEC_TYPE_ENCODER = 0X0001;
+
     public static HwBean[] checkAllCodec() {
         MediaCodecList mediaCodecList = new MediaCodecList(ALL_CODECS);
         MediaCodecInfo[] mediaCodecInfos = mediaCodecList.getCodecInfos();
         HwBean[] hwBeans = new HwBean[mediaCodecInfos.length];
         for (int i = 0; i < mediaCodecInfos.length; i++) {
-            hwBeans[i] = obtainMediaCodecInfo(mediaCodecInfos[i], "");
+            hwBeans[i] = obtainMediaCodecInfo(mediaCodecInfos[i], "", -1);
         }
         return hwBeans;
     }
@@ -35,13 +38,32 @@ public class DeviceUtil {
         ArrayList<HwBean> hwBeansList = new ArrayList<>();
         int j = 0;
         for (int i = 0; i < mediaCodecInfos.length; i++) {
-            HwBean hwBean = obtainMediaCodecInfo(mediaCodecInfos[i], mediaType);
+            HwBean hwBean = obtainMediaCodecInfo(mediaCodecInfos[i], mediaType, -1);
             if (hwBean != null) {
                 hwBeansList.add(hwBean);
             }
         }
         return hwBeansList;
     }
+
+    public static ArrayList<HwBean> checkAllCodec(String mediaType, int codecType) {
+        if (codecType != CODEC_TYPE_DECODER && codecType != CODEC_TYPE_ENCODER) {
+            throw new IllegalArgumentException("codecType 仅允许 CODEC_TYPE_DECODER 和 CODEC_TYPE_ENCODER ");
+        }
+        MediaCodecList mediaCodecList = new MediaCodecList(ALL_CODECS);
+        MediaCodecInfo[] mediaCodecInfos = mediaCodecList.getCodecInfos();
+        ArrayList<HwBean> hwBeansList = new ArrayList<>();
+        int j = 0;
+        for (int i = 0; i < mediaCodecInfos.length; i++) {
+            HwBean hwBean = obtainMediaCodecInfo(mediaCodecInfos[i], mediaType, codecType);
+            if (hwBean != null) {
+                hwBeansList.add(hwBean);
+            }
+        }
+        return hwBeansList;
+
+    }
+
 
     public static CodecInfoBean checkCodec(String codecName) {
         MediaCodecList mediaCodecList = new MediaCodecList(ALL_CODECS);
@@ -55,7 +77,15 @@ public class DeviceUtil {
         return null;
     }
 
-    private static HwBean obtainMediaCodecInfo(MediaCodecInfo mediaCodecInfo, String mediaType) {
+    /**
+     * 获取解码器信息
+     *
+     * @param mediaCodecInfo MediaCodecInfo实体类
+     * @param mediaType      MIME
+     * @param codecType      是否为编码器，1为true，0为false，二者之外为全部编解码器
+     * @return
+     */
+    private static HwBean obtainMediaCodecInfo(MediaCodecInfo mediaCodecInfo, String mediaType, int codecType) {
         String canonicalName;
         String isSoftwareOnly;
         String isAlias;
@@ -64,6 +94,18 @@ public class DeviceUtil {
         if (!mediaCodecInfo.getSupportedTypes()[0].startsWith(mediaType)) {
             return null;
         }
+        if (codecType == 0) {
+            //解码器
+            if (mediaCodecInfo.isEncoder()) {
+                return null;
+            }
+        } else if (codecType == 1) {
+            //编码器
+            if (!mediaCodecInfo.isEncoder()) {
+                return null;
+            }
+        }
+
 
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q) {
             canonicalName = mediaCodecInfo.getCanonicalName();
@@ -74,7 +116,7 @@ public class DeviceUtil {
         } else {
             canonicalName = isSoftwareOnly = isAlias = isHardwareAccelerated = isVendor = "无法获取，需要api>=29";
         }
-        String supportedTypes =mediaCodecInfo.getSupportedTypes()[0];
+        String supportedTypes = mediaCodecInfo.getSupportedTypes()[0];
         String codecName = mediaCodecInfo.getName();
         String isEncoder = (mediaCodecInfo.isEncoder()) ? "是" : "否";
 
