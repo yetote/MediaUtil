@@ -27,6 +27,7 @@ import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.PopupWindow;
 import android.widget.SimpleAdapter;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -55,9 +56,8 @@ public class EncodeAudioActivity extends AppCompatActivity implements View.OnCli
     private TextView pathTv;
     private Button parseBtn;
     private Button chooseFormatBtn, chooseCodecBtn;
-    private PopupWindowRVAdapter adapter;
-
-    private static int AUDIO_FORMAT = -1;
+    private Spinner channelSpinner, sampleSpinner;
+    private int channelCount, sampleRate;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,6 +73,8 @@ public class EncodeAudioActivity extends AppCompatActivity implements View.OnCli
         parseBtn = findViewById(R.id.encode_audio_parse_btn);
         chooseFormatBtn = findViewById(R.id.encode_audio_choose_format_btn);
         chooseCodecBtn = findViewById(R.id.encode_audio_choose_codec_btn);
+        channelSpinner = findViewById(R.id.encode_audio_channelLayout_spinner);
+        sampleSpinner = findViewById(R.id.encode_audio_sampleRate_spinner);
     }
 
     private void click() {
@@ -80,6 +82,31 @@ public class EncodeAudioActivity extends AppCompatActivity implements View.OnCli
         parseBtn.setOnClickListener(this);
         chooseFormatBtn.setOnClickListener(this);
         chooseCodecBtn.setOnClickListener(this);
+        parseBtn.setOnClickListener(this);
+        channelSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                channelCount = getResources().getStringArray(R.array.channel_layout_arr)[position].equalsIgnoreCase("单声道") ? 1 : 2;
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+                channelCount = 1;
+            }
+        });
+
+        sampleSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                sampleRate = Integer.parseInt(getResources().getStringArray(R.array.sample_rate_arr)[position]);
+                Log.e(TAG, "onItemSelected: " + sampleRate);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+                sampleRate = 8000;
+            }
+        });
     }
 
     private void chooseFile() {
@@ -92,7 +119,7 @@ public class EncodeAudioActivity extends AppCompatActivity implements View.OnCli
 
     void showPopWindow(View view, ArrayList<String> list) {
         ListPopupWindow listPopupWindow = new ListPopupWindow(this);
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, list);
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, list);
         listPopupWindow.setAdapter(adapter);
         listPopupWindow.setWidth(measureContentWidth(adapter));//也可以设置具体的值。容易出错的地方
         listPopupWindow.setHeight(ListPopupWindow.WRAP_CONTENT);
@@ -101,15 +128,24 @@ public class EncodeAudioActivity extends AppCompatActivity implements View.OnCli
         listPopupWindow.setModal(true);//模态框，设置为true响应物理键
         listPopupWindow.show();
         ListView listView = listPopupWindow.getListView();
-        listView.setOnItemClickListener((parent, view1, position, id) -> {
-            ((Button) view).setText(list.get(position));
-            listPopupWindow.dismiss();
-        });
+        if (listView != null) {
+            listView.setOnItemClickListener((parent, view1, position, id) -> {
+                ((Button) view).setText(list.get(position));
+                listPopupWindow.dismiss();
+            });
+
+            listView.setOnItemLongClickListener((parent, view12, position, id) -> {
+                Intent i = new Intent(EncodeAudioActivity.this, CodecInfoActivity.class);
+                i.putExtra("codecName", list.get(position));
+                startActivity(i);
+                return true;
+            });
+        }
     }
 
 
     public void clear() {
-
+        FileUtil.close();
     }
 
     private int measureContentWidth(ListAdapter listAdapter) {
@@ -118,12 +154,11 @@ public class EncodeAudioActivity extends AppCompatActivity implements View.OnCli
         View itemView = null;
         int itemType = 0;
 
-        final ListAdapter adapter = listAdapter;
-        final int widthMeasureSpec = View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED);
-        final int heightMeasureSpec = View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED);
-        final int count = adapter.getCount();
+        int widthMeasureSpec = View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED);
+        int heightMeasureSpec = View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED);
+        int count = listAdapter.getCount();
         for (int i = 0; i < count; i++) {
-            final int positionType = adapter.getItemViewType(i);
+            int positionType = listAdapter.getItemViewType(i);
             if (positionType != itemType) {
                 itemType = positionType;
                 itemView = null;
@@ -133,7 +168,7 @@ public class EncodeAudioActivity extends AppCompatActivity implements View.OnCli
                 mMeasureParent = new FrameLayout(this);
             }
 
-            itemView = adapter.getView(i, itemView, mMeasureParent);
+            itemView = listAdapter.getView(i, itemView, mMeasureParent);
             itemView.measure(widthMeasureSpec, heightMeasureSpec);
 
             final int itemWidth = itemView.getMeasuredWidth();
@@ -157,6 +192,7 @@ public class EncodeAudioActivity extends AppCompatActivity implements View.OnCli
                 }
                 break;
             case R.id.encode_audio_choose_format_btn:
+                chooseCodecBtn.setText(R.string.pause_to_choose_encodec_formnat);
                 List<HwBean> list = DeviceUtil.checkAllCodec("audio");
                 Set<String> mediaTypeSet = new HashSet<>();
                 for (int i = 0; i < list.size(); i++) {
@@ -179,7 +215,23 @@ public class EncodeAudioActivity extends AppCompatActivity implements View.OnCli
                 break;
 
             case R.id.encode_audio_parse_btn:
-
+                int rst = DeviceUtil.checkAudioEncoderParams(chooseCodecBtn.getText().toString(), channelCount, sampleRate);
+                switch (rst) {
+                    case DeviceUtil.CHECK_ENCODER_SUCCESS:
+                        Toast.makeText(this, "编码器检查成功", Toast.LENGTH_SHORT).show();
+                        break;
+                    case DeviceUtil.CHECK_ENCODER_UNKNOWN_ERR:
+                        Toast.makeText(this, "编码器检查失败，未知错误", Toast.LENGTH_SHORT).show();
+                        break;
+                    case DeviceUtil.CHECK_ENCODER_CHANNEL_ERR:
+                        Toast.makeText(this, "编码器检查失败，声道数超出范围", Toast.LENGTH_SHORT).show();
+                        break;
+                    case DeviceUtil.CHECK_ENCODER_SAMPLERATE_ERR:
+                        Toast.makeText(this, "编码器检查失败，采样率超出范围", Toast.LENGTH_SHORT).show();
+                        break;
+                    default:
+                        break;
+                }
                 break;
             default:
                 break;
@@ -215,7 +267,7 @@ public class EncodeAudioActivity extends AppCompatActivity implements View.OnCli
 
     @Override
     protected void onDestroy() {
-        FileUtil.close();
+        clear();
         super.onDestroy();
     }
 

@@ -50,11 +50,11 @@ public class FileUtil {
         FILE_STATE = FILE_STATE_PREPARED;
         return FILE_STATE;
     }
-
-    public static int prepare(String path, int size) {
-        byteBuffer = ByteBuffer.allocate(size).order(ByteOrder.nativeOrder());
-        return prepare(path);
-    }
+//
+//    public static int prepare(String path, int size) {
+//        byteBuffer = ByteBuffer.allocate(size).order(ByteOrder.nativeOrder());
+//        return prepare(path);
+//    }
 
 
     public static int read(int pos, byte[]... arrays) {
@@ -99,14 +99,17 @@ public class FileUtil {
         try {
             if (fileChannel != null) {
                 fileChannel.close();
+                fileChannel = null;
             }
 
             if (inputStream != null) {
                 inputStream.close();
+                inputStream = null;
             }
 
             if (byteBuffer != null) {
                 byteBuffer.clear();
+                byteBuffer = null;
             }
         } catch (IOException e) {
             e.printStackTrace();

@@ -26,7 +26,7 @@ public class YUVUtil {
      * @return yuv分量长度数组。0为Y分量长度，1为U分量，2为V分量。类型不存在时，返回负数数组
      */
     public static int[] distributionYUV(int w, int h, YUV_TYPE type) {
-        int arr[] = new int[3];
+        int[] arr = new int[3];
 
         if (w <= 0 || h <= 0) {
             arr[0] = -1;

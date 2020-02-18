@@ -13,14 +13,16 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import javax.security.auth.login.LoginException;
-
 import static android.media.MediaCodecList.ALL_CODECS;
 
 public class DeviceUtil {
-    private static final String TAG = "DeviceUtil";
     public static final int CODEC_TYPE_DECODER = 0X0000;
     public static final int CODEC_TYPE_ENCODER = 0X0001;
+
+    public static final int CHECK_ENCODER_SUCCESS = 0X0002;
+    public static final int CHECK_ENCODER_UNKNOWN_ERR = 0X0003;
+    public static final int CHECK_ENCODER_CHANNEL_ERR = 0X0004;
+    public static final int CHECK_ENCODER_SAMPLERATE_ERR = 0X0005;
 
     public static HwBean[] checkAllCodec() {
         MediaCodecList mediaCodecList = new MediaCodecList(ALL_CODECS);
@@ -36,9 +38,8 @@ public class DeviceUtil {
         MediaCodecList mediaCodecList = new MediaCodecList(ALL_CODECS);
         MediaCodecInfo[] mediaCodecInfos = mediaCodecList.getCodecInfos();
         ArrayList<HwBean> hwBeansList = new ArrayList<>();
-        int j = 0;
-        for (int i = 0; i < mediaCodecInfos.length; i++) {
-            HwBean hwBean = obtainMediaCodecInfo(mediaCodecInfos[i], mediaType, -1);
+        for (MediaCodecInfo mediaCodecInfo : mediaCodecInfos) {
+            HwBean hwBean = obtainMediaCodecInfo(mediaCodecInfo, mediaType, -1);
             if (hwBean != null) {
                 hwBeansList.add(hwBean);
             }
@@ -53,9 +54,8 @@ public class DeviceUtil {
         MediaCodecList mediaCodecList = new MediaCodecList(ALL_CODECS);
         MediaCodecInfo[] mediaCodecInfos = mediaCodecList.getCodecInfos();
         ArrayList<HwBean> hwBeansList = new ArrayList<>();
-        int j = 0;
-        for (int i = 0; i < mediaCodecInfos.length; i++) {
-            HwBean hwBean = obtainMediaCodecInfo(mediaCodecInfos[i], mediaType, codecType);
+        for (MediaCodecInfo mediaCodecInfo : mediaCodecInfos) {
+            HwBean hwBean = obtainMediaCodecInfo(mediaCodecInfo, mediaType, codecType);
             if (hwBean != null) {
                 hwBeansList.add(hwBean);
             }
@@ -77,13 +77,38 @@ public class DeviceUtil {
         return null;
     }
 
+    public static int checkAudioEncoderParams(String codecName, int channelCount, int sampleRate) {
+        MediaCodecList mediaCodecList = new MediaCodecList(ALL_CODECS);
+        MediaCodecInfo[] mediaCodecInfos = mediaCodecList.getCodecInfos();
+        int[] sampleRateArr;
+        int maxChannelCount;
+        for (MediaCodecInfo m : mediaCodecInfos) {
+            if (m.getName().equalsIgnoreCase(codecName)) {
+                MediaCodecInfo.CodecCapabilities codecCapabilities = m.getCapabilitiesForType(m.getSupportedTypes()[0]);
+                sampleRateArr = codecCapabilities.getAudioCapabilities().getSupportedSampleRates();
+                maxChannelCount = codecCapabilities.getAudioCapabilities().getMaxInputChannelCount();
+                if (channelCount > maxChannelCount) {
+                    return CHECK_ENCODER_CHANNEL_ERR;
+                }
+
+                for (int value : sampleRateArr) {
+                    if (sampleRate == value) {
+                        return CHECK_ENCODER_SUCCESS;
+                    }
+                }
+                return CHECK_ENCODER_SAMPLERATE_ERR;
+            }
+        }
+        return CHECK_ENCODER_UNKNOWN_ERR;
+    }
+
     /**
      * 获取解码器信息
      *
      * @param mediaCodecInfo MediaCodecInfo实体类
      * @param mediaType      MIME
      * @param codecType      是否为编码器，1为true，0为false，二者之外为全部编解码器
-     * @return
+     * @return 解码器信息实例
      */
     private static HwBean obtainMediaCodecInfo(MediaCodecInfo mediaCodecInfo, String mediaType, int codecType) {
         String canonicalName;
@@ -126,7 +151,7 @@ public class DeviceUtil {
     /**
      * 获取解码器详细信息
      *
-     * @param capabilities
+     * @param capabilities MediaCodecInfo.CodecCapabilities
      */
     @SuppressLint("NewApi")
     private static CodecInfoBean obtainDetailedCodecInfo(MediaCodecInfo.CodecCapabilities capabilities) {
@@ -150,13 +175,13 @@ public class DeviceUtil {
                     videoCapabilities.getSupportedHeights().toString()
             ));
             List<MediaCodecInfo.VideoCapabilities.PerformancePoint> supportedPerformancePoints = (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) ? videoCapabilities.getSupportedPerformancePoints() : null;
-            String supportedPerformancePointStr = "";
+            StringBuilder supportedPerformancePointStr = new StringBuilder();
             if (supportedPerformancePoints != null) {
                 for (int i = 0; i < supportedPerformancePoints.size(); i++) {
-                    supportedPerformancePointStr += supportedPerformancePoints.get(i).toString() + "fps\n";
+                    supportedPerformancePointStr.append(supportedPerformancePoints.get(i).toString()).append("fps\n");
                 }
             }
-            codecInfoBean.getVideoCodecInfo().setSupportedPerformancePoints(supportedPerformancePointStr);
+            codecInfoBean.getVideoCodecInfo().setSupportedPerformancePoints(supportedPerformancePointStr.toString());
         } else {
             codecInfoBean.setVideoCodecInfo(null);
         }
