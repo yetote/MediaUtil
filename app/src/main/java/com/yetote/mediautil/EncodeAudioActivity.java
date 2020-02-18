@@ -75,6 +75,9 @@ public class EncodeAudioActivity extends AppCompatActivity implements View.OnCli
         chooseCodecBtn = findViewById(R.id.encode_audio_choose_codec_btn);
         channelSpinner = findViewById(R.id.encode_audio_channelLayout_spinner);
         sampleSpinner = findViewById(R.id.encode_audio_sampleRate_spinner);
+        // TODO: 2020/2/18 测试使用路径，正式要记得删除
+        pathTv.setText("/storage/emulated/0/test.pcm");
+
     }
 
     private void click() {
@@ -215,10 +218,15 @@ public class EncodeAudioActivity extends AppCompatActivity implements View.OnCli
                 break;
 
             case R.id.encode_audio_parse_btn:
+//                Log.e(TAG, "onClick: " + pathTv.getText().toString());
+                if (pathTv.getText().toString().isEmpty() || !pathTv.getText().toString().endsWith(".pcm")) {
+                    Toast.makeText(this, "选择的文件格式不正确，必须为pcm原始数据", Toast.LENGTH_SHORT).show();
+                    return;
+                }
                 int rst = DeviceUtil.checkAudioEncoderParams(chooseCodecBtn.getText().toString(), channelCount, sampleRate);
                 switch (rst) {
                     case DeviceUtil.CHECK_ENCODER_SUCCESS:
-                        Toast.makeText(this, "编码器检查成功", Toast.LENGTH_SHORT).show();
+                        HardWareCodec.encodeAudio(chooseCodecBtn.getText().toString(), "audio/" + chooseFormatBtn.getText().toString(), sampleRate, channelCount);
                         break;
                     case DeviceUtil.CHECK_ENCODER_UNKNOWN_ERR:
                         Toast.makeText(this, "编码器检查失败，未知错误", Toast.LENGTH_SHORT).show();
