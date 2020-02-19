@@ -12,11 +12,13 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 
 import static android.media.AudioFormat.ENCODING_PCM_16BIT;
+import static android.media.MediaCodec.BUFFER_FLAG_END_OF_STREAM;
 
 /**
  * 硬编码API
@@ -33,16 +35,17 @@ public class HardWareCodec {
         if (codecType != HW_ENCODEC_TYPE_SYNCHRONOUS && codecType != HW_ENCODEC_TYPE_ASYNCHRONOUS) {
             throw new IllegalArgumentException("codecType 仅被允许为 HW_ENCODEC_TYPE_SYNCHRONOUS 或 HW_ENCODEC_TYPE_ASYNCHRONOUS ");
         }
+        FileUtils.checkState(FileUtils.checkFile(inputPath), FileUtils.FILE_STATE_SUCCESS);
+        FileUtils.checkState(FileUtils.checkFile(outputPath), FileUtils.FILE_STATE_SUCCESS);
 
         try {
-            FileUtils.checkState(FileUtils.checkFile(inputPath), FileUtils.FILE_STATE_SUCCESS);
-            FileUtils.checkState(FileUtils.checkFile(outputPath), FileUtils.FILE_STATE_SUCCESS);
             FileInputStream rawStream = new FileInputStream(inputPath);
             FileChannel inputChannel = rawStream.getChannel();
-            FileInputStream encodecStream = new FileInputStream(outputPath);
+            FileOutputStream encodecStream = new FileOutputStream(outputPath);
             FileChannel outputChannel = encodecStream.getChannel();
             int minBufferSize = AudioRecord.getMinBufferSize(sampleRate, channelCount, ENCODING_PCM_16BIT);
             MediaCodec mediaCodec = MediaCodec.createByCodecName(codecName);
+            Log.e(TAG, "encodeAudio: codecname" + mediaCodec.getName());
             MediaFormat mediaFormat = MediaFormat.createAudioFormat(MediaFormat.MIMETYPE_AUDIO_AAC, sampleRate, channelCount);
             mediaFormat.setString(MediaFormat.KEY_MIME, MediaFormat.MIMETYPE_AUDIO_AAC);
             mediaFormat.setInteger(MediaFormat.KEY_CHANNEL_COUNT, channelCount);
@@ -65,7 +68,7 @@ public class HardWareCodec {
             }
 
         } catch (IOException e) {
-            e.printStackTrace();
+            Log.e(TAG, "encodeAudio: " + e.toString());
         }
     }
 
@@ -83,16 +86,18 @@ public class HardWareCodec {
         mediaCodec.setCallback(new MediaCodec.Callback() {
             @Override
             public void onInputBufferAvailable(@NonNull MediaCodec codec, int index) {
+                Log.e(TAG, "onInputBufferAvailable: index" + index);
                 ByteBuffer buffer = codec.getInputBuffer(index);
                 buffer.clear();
-                Log.e(TAG, "onInputBufferAvailable: " + buffer.capacity());
                 byte[] data = new byte[buffer.capacity()];
-                buffer.put(data);
                 int rst = FileUtils.read(inputChannel, pos, data);
+                buffer.put(data);
+                buffer.flip();
+                Log.e(TAG, "onInputBufferAvailable: limit" + buffer.limit());
                 if (rst == FileUtils.FILE_STATE_END) {
-                    codec.queueInputBuffer(index, 0, 0, 0, MediaCodec.BUFFER_FLAG_END_OF_STREAM);
+                    codec.queueInputBuffer(index, 0, 0, 0, BUFFER_FLAG_END_OF_STREAM);
                 } else {
-                    codec.queueInputBuffer(index, 0, data.length, 0, MediaCodec.BUFFER_FLAG_KEY_FRAME);
+                    codec.queueInputBuffer(index, 0, data.length, 0, 0);
                 }
                 pos += data.length;
             }
@@ -101,8 +106,14 @@ public class HardWareCodec {
             public void onOutputBufferAvailable(@NonNull MediaCodec codec, int index, @NonNull MediaCodec.BufferInfo info) {
                 ByteBuffer buffer = codec.getOutputBuffer(index);
                 Log.e(TAG, "onOutputBufferAvailable:flags " + info.flags);
-                buffer.clear();
-                codec.releaseOutputBuffer(index, false);
+                if (info.flags == BUFFER_FLAG_END_OF_STREAM) {
+                    mediaCodec.stop();
+                    mediaCodec.release();
+                } else {
+                    FileUtils.write(outputChannel, buffer);
+                    buffer.clear();
+                    codec.releaseOutputBuffer(index, false);
+                }
             }
 
             @Override

@@ -28,13 +28,15 @@ public class FileUtils {
     public static final int FILE_STATE_START = 0x0006;
 
     public static final int FILE_STATE_READING = 0x0007;
+    public static final int FILE_STATE_WRITING = 0x0008;
 
-    public static final int FILE_STATE_NULL_PATH = 0x0008;
+    public static final int FILE_STATE_NULL_PATH = 0x0009;
 
     public static final String[] errTable = new String[]{
             "FILE_STATE_SUCCESS", "FILE_STATE_PREPARED", "FILE_STATE_CLOSED",
-            "FILE_STATE_UN_PREPARED", "FILE_STATE_UN_EXIST",
-            "FILE_STATE_END", "FILE_STATE_START", "FILE_STATE_READING", "FILE_STATE_NULL_PATH"
+            "FILE_STATE_UN_PREPARED", "FILE_STATE_UN_EXIST", "FILE_STATE_END",
+            "FILE_STATE_START", "FILE_STATE_READING", "FILE_STATE_WRITING",
+            "FILE_STATE_NULL_PATH"
     };
     public static int FILE_STATE = -1;
 
@@ -88,16 +90,44 @@ public class FileUtils {
         return FILE_STATE_READING;
     }
 
+    public static int write(FileChannel fileChannel, byte[]... arrays) {
+        if (fileChannel == null) {
+            Log.e(TAG, "read: 未进行初始化");
+            return FILE_STATE_UN_PREPARED;
+        }
+        int length = 0;
+        for (byte[] arr : arrays) {
+            length += arr.length;
+        }
+        ByteBuffer buffer = ByteBuffer.allocate(length).order(ByteOrder.nativeOrder());
+        for (byte[] dataArr : arrays) {
+            buffer.put(dataArr);
+        }
+        return write(fileChannel, buffer);
+    }
+
+    public static int write(FileChannel fileChannel, ByteBuffer buffer) {
+        if (fileChannel == null) {
+            Log.e(TAG, "read: 未进行初始化");
+            return FILE_STATE_UN_PREPARED;
+        }
+        buffer.flip();
+        try {
+            fileChannel.write(buffer);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return FILE_STATE_WRITING;
+    }
+
     public static void close(FileChannel fileChannel, InputStream inputStream) {
         try {
             if (fileChannel != null) {
                 fileChannel.close();
-                fileChannel = null;
             }
 
             if (inputStream != null) {
                 inputStream.close();
-                inputStream = null;
             }
 
             if (byteBuffer != null) {
@@ -122,9 +152,17 @@ public class FileUtils {
             Log.e(TAG, "prepare: path为null");
             return false;
         }
-        File file = new File(path);
-        if (!file.exists()) {
-            return file.mkdirs();
+        try {
+            File file = new File(path);
+            if (!file.exists()) {
+                File parentFile = file.getParentFile();
+                if (!parentFile.exists()) {
+                    parentFile.mkdirs();
+                }
+                file.createNewFile();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
         }
         return true;
     }

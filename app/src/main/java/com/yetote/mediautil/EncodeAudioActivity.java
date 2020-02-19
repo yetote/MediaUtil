@@ -220,11 +220,11 @@ public class EncodeAudioActivity extends AppCompatActivity implements View.OnCli
                 switch (rst) {
                     case DeviceUtil.CHECK_ENCODER_SUCCESS:
                         String codecName = chooseCodecBtn.getText().toString();
-                        String mime = "audio/" + chooseFormatBtn.getText().toString();
+                        String mime = chooseFormatBtn.getText().toString();
 //                        String encodeType = HardWareCodec.HW_ENCODEC_TYPE_ASYNCHRONOUS==;
-                        String outputPath = this.getExternalFilesDir(Environment.DIRECTORY_MUSIC).getPath() + codecName + mime + ".mp4";
+                        String outputPath = this.getExternalFilesDir(Environment.DIRECTORY_MUSIC).getPath() + "/" + codecName.replace(".", "_") + "_" + "aac" + ".aac";
                         if (FileUtils.createFile(outputPath)) {
-                            HardWareCodec.encodeAudio(pathTv.getText().toString(), outputPath, codecName, mime, sampleRate, channelCount, HardWareCodec.HW_ENCODEC_TYPE_ASYNCHRONOUS);
+                            HardWareCodec.encodeAudio(pathTv.getText().toString(), outputPath, codecName, "audio/" + mime, sampleRate, channelCount, HardWareCodec.HW_ENCODEC_TYPE_ASYNCHRONOUS);
                         } else {
                             Toast.makeText(this, "无法创建文件，请检查权限", Toast.LENGTH_SHORT).show();
                         }

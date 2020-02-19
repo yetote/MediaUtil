@@ -26,7 +26,6 @@ public class CodecInfoActivity extends AppCompatActivity {
         Intent i = getIntent();
         codecName = i.getStringExtra("codecName");
 
-
         initView();
         CodecInfoBean codecInfoBean = DeviceUtil.checkCodec(codecName);
 
