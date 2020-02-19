@@ -26,6 +26,11 @@ public class FileUtil {
     public static final int FILE_STATE_START = 0x0006;
 
     public static final int FILE_STATE_READING = 0x0007;
+    public static final String[] errTable = new String[]{
+            "", "FILE_STATE_PREPARED", "FILE_STATE_CLOSED",
+            "FILE_STATE_UN_PREPARED", "FILE_STATE_UN_EXIST",
+            "FILE_STATE_END", "FILE_STATE_START", "FILE_STATE_READING"
+    };
     public static int FILE_STATE = -1;
 
 
@@ -50,11 +55,6 @@ public class FileUtil {
         FILE_STATE = FILE_STATE_PREPARED;
         return FILE_STATE;
     }
-//
-//    public static int prepare(String path, int size) {
-//        byteBuffer = ByteBuffer.allocate(size).order(ByteOrder.nativeOrder());
-//        return prepare(path);
-//    }
 
 
     public static int read(int pos, byte[]... arrays) {
@@ -87,6 +87,7 @@ public class FileUtil {
                 byteBuffer.get(dataArr);
                 Log.e(TAG, "read: " + Arrays.toString(dataArr));
             }
+
         } catch (IOException e) {
             Log.e(TAG, "read: " + e.toString());
             e.printStackTrace();
@@ -116,6 +117,24 @@ public class FileUtil {
         }
         FILE_STATE = FILE_STATE_CLOSED;
         Log.e(TAG, "close: 销毁FileUtil");
+    }
+
+    public static boolean checkState(int state) {
+        if (!errTable[state].equalsIgnoreCase("FILE_STATE_PREPARED"))
+            throw new IllegalStateException(errTable[state]);
+        return true;
+    }
+
+    public static boolean createFile(String path) {
+        if (path == null) {
+            Log.e(TAG, "prepare: path为null");
+            return false;
+        }
+        File file = new File(path);
+        if (!file.exists()) {
+            return file.mkdirs();
+        }
+        return true;
     }
 
 }

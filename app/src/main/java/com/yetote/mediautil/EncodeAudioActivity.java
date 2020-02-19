@@ -5,6 +5,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.ListPopupWindow;
 import androidx.core.app.ActivityCompat;
+import androidx.core.os.EnvironmentCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -12,6 +13,7 @@ import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.os.Environment;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -226,7 +228,15 @@ public class EncodeAudioActivity extends AppCompatActivity implements View.OnCli
                 int rst = DeviceUtil.checkAudioEncoderParams(chooseCodecBtn.getText().toString(), channelCount, sampleRate);
                 switch (rst) {
                     case DeviceUtil.CHECK_ENCODER_SUCCESS:
-                        HardWareCodec.encodeAudio(chooseCodecBtn.getText().toString(), "audio/" + chooseFormatBtn.getText().toString(), sampleRate, channelCount);
+                        String codecName = chooseCodecBtn.getText().toString();
+                        String mime = "audio/" + chooseFormatBtn.getText().toString();
+//                        String encodeType = HardWareCodec.HW_ENCODEC_TYPE_ASYNCHRONOUS==;
+                        String outputPath = this.getExternalFilesDir(Environment.DIRECTORY_MUSIC).getPath() + codecName + mime + ".mp4";
+                        if (FileUtil.createFile(outputPath)) {
+                            HardWareCodec.encodeAudio(pathTv.getText().toString(), outputPath, codecName, mime, sampleRate, channelCount, HardWareCodec.HW_ENCODEC_TYPE_ASYNCHRONOUS);
+                        } else {
+                            Toast.makeText(this, "无法创建文件，请检查权限", Toast.LENGTH_SHORT).show();
+                        }
                         break;
                     case DeviceUtil.CHECK_ENCODER_UNKNOWN_ERR:
                         Toast.makeText(this, "编码器检查失败，未知错误", Toast.LENGTH_SHORT).show();
