@@ -7,13 +7,14 @@ import android.media.MediaFormat;
 import android.os.Build;
 import android.os.Handler;
 import android.os.HandlerThread;
-import android.system.Os;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
 
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.nio.channels.FileChannel;
 
 import static android.media.AudioFormat.ENCODING_PCM_16BIT;
 
@@ -32,12 +33,15 @@ public class HardWareCodec {
         if (codecType != HW_ENCODEC_TYPE_SYNCHRONOUS && codecType != HW_ENCODEC_TYPE_ASYNCHRONOUS) {
             throw new IllegalArgumentException("codecType 仅被允许为 HW_ENCODEC_TYPE_SYNCHRONOUS 或 HW_ENCODEC_TYPE_ASYNCHRONOUS ");
         }
-        if (FileUtil.checkState(FileUtil.prepare(inputPath))) {
-            Log.e(TAG, "encodeAudio: 文件打开成功");
-        }
 
-        int minBufferSize = AudioRecord.getMinBufferSize(sampleRate, channelCount, ENCODING_PCM_16BIT);
         try {
+            FileUtils.checkState(FileUtils.checkFile(inputPath), FileUtils.FILE_STATE_SUCCESS);
+            FileUtils.checkState(FileUtils.checkFile(outputPath), FileUtils.FILE_STATE_SUCCESS);
+            FileInputStream rawStream = new FileInputStream(inputPath);
+            FileChannel inputChannel = rawStream.getChannel();
+            FileInputStream encodecStream = new FileInputStream(outputPath);
+            FileChannel outputChannel = encodecStream.getChannel();
+            int minBufferSize = AudioRecord.getMinBufferSize(sampleRate, channelCount, ENCODING_PCM_16BIT);
             MediaCodec mediaCodec = MediaCodec.createByCodecName(codecName);
             MediaFormat mediaFormat = MediaFormat.createAudioFormat(MediaFormat.MIMETYPE_AUDIO_AAC, sampleRate, channelCount);
             mediaFormat.setString(MediaFormat.KEY_MIME, MediaFormat.MIMETYPE_AUDIO_AAC);
@@ -50,7 +54,7 @@ public class HardWareCodec {
 
             if (codecType == HW_ENCODEC_TYPE_ASYNCHRONOUS) {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                    codecByAync(mediaCodec);
+                    codecByAync(mediaCodec, inputChannel, outputChannel);
                     mediaCodec.start();
                 } else {
                     return;
@@ -69,7 +73,7 @@ public class HardWareCodec {
 
     }
 
-    private static void codecByAync(MediaCodec mediaCodec) {
+    private static void codecByAync(MediaCodec mediaCodec, FileChannel inputChannel, FileChannel outputChannel) {
         Log.e(TAG, "codecBySync: ");
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M)
             return;
@@ -84,8 +88,8 @@ public class HardWareCodec {
                 Log.e(TAG, "onInputBufferAvailable: " + buffer.capacity());
                 byte[] data = new byte[buffer.capacity()];
                 buffer.put(data);
-                int rst = FileUtil.read(pos, data);
-                if (rst == FileUtil.FILE_STATE_END) {
+                int rst = FileUtils.read(inputChannel, pos, data);
+                if (rst == FileUtils.FILE_STATE_END) {
                     codec.queueInputBuffer(index, 0, 0, 0, MediaCodec.BUFFER_FLAG_END_OF_STREAM);
                 } else {
                     codec.queueInputBuffer(index, 0, data.length, 0, MediaCodec.BUFFER_FLAG_KEY_FRAME);
