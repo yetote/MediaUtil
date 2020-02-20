@@ -69,7 +69,7 @@ public class EncodeAudioActivity extends AppCompatActivity implements View.OnCli
         channelSpinner = findViewById(R.id.encode_audio_channelLayout_spinner);
         sampleSpinner = findViewById(R.id.encode_audio_sampleRate_spinner);
         // TODO: 2020/2/18 测试使用路径，正式要记得删除
-        pathTv.setText("/storage/emulated/0/test.pcm");
+        pathTv.setText("/storage/emulated/0/441stereo.pcm");
 
     }
 

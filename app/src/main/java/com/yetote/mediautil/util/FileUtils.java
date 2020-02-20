@@ -14,7 +14,6 @@ import java.util.Arrays;
 
 public class FileUtils {
     private static final String TAG = "FileUtil";
-    private static ByteBuffer byteBuffer;
 
     public static final int FILE_STATE_SUCCESS = 0x0000;
 
@@ -56,14 +55,19 @@ public class FileUtils {
             Log.e(TAG, "read: 未进行初始化");
             return FILE_STATE_UN_PREPARED;
         }
-        if (byteBuffer == null) {
-            int length = 0;
-            for (byte[] arr : arrays) {
-                length += arr.length;
-            }
-            byteBuffer = ByteBuffer.allocate(length).order(ByteOrder.nativeOrder());
+
+
+        int length = 0;
+        for (byte[] arr : arrays) {
+            length += arr.length;
         }
 
+        try {
+            length = (int) Math.min(fileChannel.size() - fileChannel.position(), length);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        ByteBuffer buffer = ByteBuffer.allocate(length).order(ByteOrder.nativeOrder());
         try {
             if (pos >= fileChannel.size()) {
                 return FILE_STATE_END;
@@ -71,14 +75,14 @@ public class FileUtils {
             if (pos < 0) {
                 return FILE_STATE_START;
             }
-            byteBuffer.clear();
+            buffer.clear();
             fileChannel.position(pos);
             Log.e(TAG, "read: pos" + fileChannel.position());
-            fileChannel.read(byteBuffer);
-            byteBuffer.flip();
+            fileChannel.read(buffer);
+            buffer.flip();
             for (byte[] dataArr : arrays) {
-                Log.e(TAG, "read: buffer 容量" + byteBuffer.limit());
-                byteBuffer.get(dataArr);
+                Log.e(TAG, "read: buffer 容量" + buffer.limit());
+                buffer.get(dataArr, 0, Math.min(buffer.limit() - buffer.position(), dataArr.length));
                 Log.e(TAG, "read: " + Arrays.toString(dataArr));
             }
 
@@ -113,6 +117,8 @@ public class FileUtils {
         }
         buffer.flip();
         try {
+            Log.e(TAG, "write: buffer limit" + buffer.limit());
+            Log.e(TAG, "write: buffer position" + buffer.position());
             fileChannel.write(buffer);
         } catch (IOException e) {
             e.printStackTrace();
@@ -128,11 +134,6 @@ public class FileUtils {
 
             if (inputStream != null) {
                 inputStream.close();
-            }
-
-            if (byteBuffer != null) {
-                byteBuffer.clear();
-                byteBuffer = null;
             }
         } catch (IOException e) {
             e.printStackTrace();
