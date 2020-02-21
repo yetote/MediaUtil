@@ -48,4 +48,19 @@
         <item>Java</item>
         <item>Native</item>
     </string-array>
+
+    <string-array name="aac_level_arr">
+        <item>AAC MAIN</item>
+        <item>AAC LC</item>
+        <item>AAC SSR</item>
+        <item>AAC LTP</item>
+        <item>AAC HE</item>
+        <item>AAC Scalable</item>
+        <item>ER AAC LC</item>
+        <item>ER AAC Scalable</item>
+        <item>ER AAC LD</item>
+        <item>AAC HEv2</item>
+        <item>AAC ELD</item>
+        <item>AAC xHE</item>
+    </string-array>
 </resources>

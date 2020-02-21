@@ -1,11 +1,5 @@
 package com.yetote.mediautil;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.ListPopupWindow;
-import androidx.core.app.ActivityCompat;
-
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -19,19 +13,28 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.ListAdapter;
 import android.widget.ListView;
+import android.widget.RadioGroup;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.ListPopupWindow;
+import androidx.core.app.ActivityCompat;
+
 import com.yetote.mediautil.bean.HwBean;
+import com.yetote.mediautil.interfaces.EncodeProgressCallback;
 import com.yetote.mediautil.util.AndroidFileUtil;
 import com.yetote.mediautil.util.DeviceUtil;
+import com.yetote.mediautil.util.EncodeUtils;
 import com.yetote.mediautil.util.FileUtils;
 import com.yetote.mediautil.util.HardWareCodec;
 
-import java.nio.channels.FileChannel;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -48,9 +51,16 @@ public class EncodeAudioActivity extends AppCompatActivity implements View.OnCli
     private Button chooseFileBtn;
     private TextView pathTv;
     private Button parseBtn;
-    private Button chooseFormatBtn, chooseCodecBtn;
+    private Button chooseFormatBtn, chooseCodecBtn, chooserLevelBtn;
     private Spinner channelSpinner, sampleSpinner;
+    private RadioGroup writeADTSRg;
+    private ImageView help;
+
+    private String codecLevel = "AAC LC";
     private int channelCount, sampleRate;
+    private boolean isWriteADTS = true;
+
+    private EncodeUtils encodeUtils;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,9 +78,14 @@ public class EncodeAudioActivity extends AppCompatActivity implements View.OnCli
         chooseCodecBtn = findViewById(R.id.encode_audio_choose_codec_btn);
         channelSpinner = findViewById(R.id.encode_audio_channelLayout_spinner);
         sampleSpinner = findViewById(R.id.encode_audio_sampleRate_spinner);
+        chooserLevelBtn = findViewById(R.id.encode_audio_choose_level_btn);
+        writeADTSRg = findViewById(R.id.encode_audio_write_adts_rg);
+        help = findViewById(R.id.encode_audio_choose_level_help);
         // TODO: 2020/2/18 测试使用路径，正式要记得删除
         pathTv.setText("/storage/emulated/0/441stereo.pcm");
 
+
+        encodeUtils = new EncodeUtils();
     }
 
     private void click() {
@@ -78,7 +93,13 @@ public class EncodeAudioActivity extends AppCompatActivity implements View.OnCli
         parseBtn.setOnClickListener(this);
         chooseFormatBtn.setOnClickListener(this);
         chooseCodecBtn.setOnClickListener(this);
+        chooserLevelBtn.setOnClickListener(this);
         parseBtn.setOnClickListener(this);
+
+        writeADTSRg.setOnCheckedChangeListener((group, checkedId) -> {
+            isWriteADTS = checkedId != R.id.encode_audio_write_adts_false;
+        });
+
         channelSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
@@ -188,7 +209,7 @@ public class EncodeAudioActivity extends AppCompatActivity implements View.OnCli
                 }
                 break;
             case R.id.encode_audio_choose_format_btn:
-                chooseCodecBtn.setText(R.string.pause_to_choose_encodec_formnat);
+//                chooseCodecBtn.setText(R.string.pause_to_choose_encodec_format);
                 List<HwBean> list = DeviceUtil.checkAllCodec("audio");
                 Set<String> mediaTypeSet = new HashSet<>();
                 for (int i = 0; i < list.size(); i++) {
@@ -211,20 +232,40 @@ public class EncodeAudioActivity extends AppCompatActivity implements View.OnCli
                 break;
 
             case R.id.encode_audio_parse_btn:
-//                Log.e(TAG, "onClick: " + pathTv.getText().toString());
                 if (pathTv.getText().toString().isEmpty() || !pathTv.getText().toString().endsWith(".pcm")) {
                     Toast.makeText(this, "选择的文件格式不正确，必须为pcm原始数据", Toast.LENGTH_SHORT).show();
                     return;
                 }
-                int rst = DeviceUtil.checkAudioEncoderParams(chooseCodecBtn.getText().toString(), channelCount, sampleRate);
+                if (chooseFormatBtn.getText().toString().equalsIgnoreCase(getString(R.string.pause_to_choose_encodec_format))) {
+                    Toast.makeText(this, "请选择编码格式", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                int rst;
+                if (chooseCodecBtn.getText().toString().isEmpty()) {
+                    rst = DeviceUtil.checkAudioEncoderParams(chooseCodecBtn.getText().toString(), channelCount, sampleRate);
+                } else {
+                    rst = DeviceUtil.CHECK_ENCODER_SUCCESS;
+                }
+
                 switch (rst) {
                     case DeviceUtil.CHECK_ENCODER_SUCCESS:
-                        String codecName = chooseCodecBtn.getText().toString();
+                        String codecName = chooseCodecBtn.getText().toString().equalsIgnoreCase(getString(R.string.pause_to_choose_encodec)) ? "default" : chooseCodecBtn.getText().toString();
                         String mime = chooseFormatBtn.getText().toString();
 //                        String encodeType = HardWareCodec.HW_ENCODEC_TYPE_ASYNCHRONOUS==;
-                        String outputPath = this.getExternalFilesDir(Environment.DIRECTORY_MUSIC).getPath() + "/" + codecName.replace(".", "_") + "_" + "aac" + ".aac";
+                        codecLevel = chooserLevelBtn.getText().toString().equalsIgnoreCase(getString(R.string.pause_to_choose_level)) ? "AAC LC" : chooserLevelBtn.getText().toString();
+                        String outputPath = this.getExternalFilesDir(Environment.DIRECTORY_MUSIC).getPath() + "/" + codecName.replace(".", "_") + "_" + codecLevel.replace(" ", "_") + ".aac";
                         if (FileUtils.createFile(outputPath)) {
-                            HardWareCodec.encodeAudio(pathTv.getText().toString(), outputPath, codecName, "audio/" + mime, sampleRate, channelCount, HardWareCodec.HW_ENCODEC_TYPE_ASYNCHRONOUS);
+//                            HardWareCodec.encodeAudio(pathTv.getText().toString(), outputPath, codecName, "audio/" + mime, sampleRate, channelCount, HardWareCodec.HW_ENCODEC_TYPE_ASYNCHRONOUS, codecLevel, isWriteADTS, progressCallback);
+                            encodeUtils.setInputPath(pathTv.getText().toString())
+                                    .setOutputPath(outputPath)
+                                    .setProgressCallback(progress -> {
+                                        Log.e(TAG, "setProgress: " + progress);
+                                        if (progress == 100) {
+                                            Toast.makeText(this, "编码完成", Toast.LENGTH_SHORT).show();
+                                            encodeUtils.destroy();
+                                        }
+                                    }).encodeAudio("audio/" + mime, channelCount, sampleRate, codecName, codecLevel, true);
                         } else {
                             Toast.makeText(this, "无法创建文件，请检查权限", Toast.LENGTH_SHORT).show();
                         }
@@ -241,6 +282,10 @@ public class EncodeAudioActivity extends AppCompatActivity implements View.OnCli
                     default:
                         break;
                 }
+                break;
+            case R.id.encode_audio_choose_level_btn:
+                List<String> levelList = Arrays.asList(getResources().getStringArray(R.array.aac_level_arr));
+                showPopWindow(chooserLevelBtn, new ArrayList<>(levelList));
                 break;
             default:
                 break;

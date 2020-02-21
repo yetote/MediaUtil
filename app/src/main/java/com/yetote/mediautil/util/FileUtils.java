@@ -85,7 +85,7 @@ public class FileUtils {
                 buffer.get(dataArr, 0, Math.min(buffer.limit() - buffer.position(), dataArr.length));
                 Log.e(TAG, "read: " + Arrays.toString(dataArr));
             }
-
+            return (int) (fileChannel.position());
         } catch (IOException e) {
             Log.e(TAG, "read: " + e.toString());
             e.printStackTrace();

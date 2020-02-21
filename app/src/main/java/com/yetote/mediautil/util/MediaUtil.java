@@ -1,6 +1,9 @@
 package com.yetote.mediautil.util;
 
+import android.util.Log;
+
 public class MediaUtil {
+    private static final String TAG = "MediaUtil";
     static int[][] sampleRateTable = new int[][]{
             //00 01 02  03  04  05  06  07  08  09
             {-1, -1, -1, -1, -1, -1, -1, 12, 11, -1},
@@ -24,13 +27,13 @@ public class MediaUtil {
         //传递进来的为裸流数据，需要加上adts占用的7byte
         packetLength += 7;
         //AAC编码级别,该值与MediaCodecInfo.CodecProfileLevel.AACObjectXX的值对应
-        int profile = 2;
+        int profile = aacObjectType;
         //采样率，采用双层查表法查找
         int freqIdx = sampleRateTable[sampleRate / 10000][sampleRate / 1000 % 10];
         //声道数，这里可以直接传数字
-        int chanCfg = 2;
+        int chanCfg = channelCount;
 
-
+        Log.e(TAG, "synthesisADTS: " + freqIdx);
         /*int avpriv_mpeg4audio_sample_rates[] = {
             96000, 88200, 64000, 48000, 44100, 32000,
                     24000, 22050, 16000, 12000, 11025, 8000, 7350

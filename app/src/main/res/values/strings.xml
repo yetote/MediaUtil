@@ -24,7 +24,13 @@
     <string name="encode">编码</string>
     <string name="api_type">API</string>
     <string name="eccodec_format">编码格式</string>
-    <string name="pause_to_choose_encodec_formnat">点击选择编码格式</string>
+    <string name="pause_to_choose_encodec_format">点击选择编码格式</string>
     <string name="encodec_name">编码器名</string>
     <string name="pause_to_choose_encodec">点击选择编码器</string>
+    <string name="advanced_settings">高级设置</string>
+    <string name="level">级别</string>
+    <string name="pause_to_choose_level">点击选择编码级别</string>
+    <string name="write_adts">写入ADTS</string>
+    <string name="xml_false">否</string>
+    <string name="xml_true">是</string>
 </resources>
