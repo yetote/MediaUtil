@@ -83,12 +83,14 @@ set(UTIL_SOURCE
 
 #        util/Native4JavaCallback.cpp
 #        util/MessageQueue.cpp
+        util/FFmpegUtil.cpp
         )
 #
 set(
         MEDIA_SOURCE
 
         decode/FFmpegDemode.cpp
+        encode/FFmpegEncode.cpp
 )
 
 

@@ -1,5 +1,7 @@
 package com.yetote.mediautil.util;
 
+import android.util.Log;
+
 import com.yetote.mediautil.interfaces.EncodeProgressCallback;
 
 import java.io.FileInputStream;
@@ -9,6 +11,7 @@ import java.io.IOException;
 import java.nio.channels.FileChannel;
 
 public class EncodeUtils {
+    private static final String TAG = "EncodeUtils";
     FileInputStream inputStream;
     FileOutputStream outputStream;
     FileChannel inputChannel, outputChannel;
@@ -23,6 +26,9 @@ public class EncodeUtils {
 
     EncodeProgressCallback progressCallback;
 
+    boolean isHardWare = true;
+    String inputPath, outputPath;
+
     public EncodeUtils setProgressCallback(EncodeProgressCallback progressCallback) {
         this.progressCallback = progressCallback;
         return this;
@@ -33,6 +39,7 @@ public class EncodeUtils {
     }
 
     public EncodeUtils setInputPath(String path) {
+        this.inputPath = path;
         try {
             FileUtils.checkState(FileUtils.checkFile(path), FileUtils.FILE_STATE_SUCCESS);
             inputStream = new FileInputStream(path);
@@ -51,6 +58,7 @@ public class EncodeUtils {
     }
 
     public EncodeUtils setOutputPath(String path) {
+        this.outputPath = path;
         try {
             FileUtils.checkState(FileUtils.checkFile(path), FileUtils.FILE_STATE_SUCCESS);
             outputStream = new FileOutputStream(path);
@@ -62,6 +70,7 @@ public class EncodeUtils {
     }
 
     public EncodeUtils setHardware(boolean isHardware) {
+        isHardWare = isHardware;
         return this;
     }
 
@@ -70,7 +79,14 @@ public class EncodeUtils {
     }
 
     public void encodeAudio(String mime, int channelCount, int sampleRate, String codecName, String codecLevel, boolean isWriteADTS) {
-        HardWareCodec.encodeAudio(inputChannel, outputChannel, codecName, mime, sampleRate, channelCount, true, codecLevel, isWriteADTS, progressCallback);
+        if (isHardWare) {
+            HardWareCodec.encodeAudio(inputChannel, outputChannel, codecName, mime, sampleRate, channelCount, true, codecLevel, isWriteADTS, progressCallback);
+        } else {
+            Log.e(TAG, "encodeAudio: "+inputPath );
+            Log.e(TAG, "encodeAudio: "+outputPath );
+            Log.e(TAG, "encodeAudio: "+mime );
+            FFmpegUtil.encodeAudio(inputPath, outputPath, mime);
+        }
     }
 
     public void destroy() {

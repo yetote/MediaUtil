@@ -52,13 +52,13 @@ public class EncodeAudioActivity extends AppCompatActivity implements View.OnCli
     private TextView pathTv;
     private Button parseBtn;
     private Button chooseFormatBtn, chooseCodecBtn, chooserLevelBtn;
-    private Spinner channelSpinner, sampleSpinner;
+    private Spinner channelSpinner, sampleSpinner, encodeModeSpinner;
     private RadioGroup writeADTSRg;
     private ImageView help;
 
     private String codecLevel = "AAC LC";
     private int channelCount, sampleRate;
-    private boolean isWriteADTS = true;
+    private boolean isWriteADTS = true, isHardware = true;
 
     private EncodeUtils encodeUtils;
 
@@ -81,6 +81,7 @@ public class EncodeAudioActivity extends AppCompatActivity implements View.OnCli
         chooserLevelBtn = findViewById(R.id.encode_audio_choose_level_btn);
         writeADTSRg = findViewById(R.id.encode_audio_write_adts_rg);
         help = findViewById(R.id.encode_audio_choose_level_help);
+        encodeModeSpinner = findViewById(R.id.encode_audio_encode_mode_spinner);
         // TODO: 2020/2/18 测试使用路径，正式要记得删除
         pathTv.setText("/storage/emulated/0/441stereo.pcm");
 
@@ -122,6 +123,17 @@ public class EncodeAudioActivity extends AppCompatActivity implements View.OnCli
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
                 sampleRate = 8000;
+            }
+        });
+        encodeModeSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                isHardware = getResources().getStringArray(R.array.codec_mode_arr)[position].equalsIgnoreCase("硬解");
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+                isHardware = true;
             }
         });
     }
@@ -259,6 +271,7 @@ public class EncodeAudioActivity extends AppCompatActivity implements View.OnCli
 //                            HardWareCodec.encodeAudio(pathTv.getText().toString(), outputPath, codecName, "audio/" + mime, sampleRate, channelCount, HardWareCodec.HW_ENCODEC_TYPE_ASYNCHRONOUS, codecLevel, isWriteADTS, progressCallback);
                             encodeUtils.setInputPath(pathTv.getText().toString())
                                     .setOutputPath(outputPath)
+                                    .setHardware(isHardware)
                                     .setProgressCallback(progress -> {
                                         Log.e(TAG, "setProgress: " + progress);
                                         if (progress == 100) {

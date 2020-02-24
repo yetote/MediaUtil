@@ -24,7 +24,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/encode_audio_mode_tv"
+        android:id="@+id/encode_audio_encode_mode_tv"
         style="@style/CodecInfoTextViewStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -33,16 +33,16 @@
         app:layout_constraintTop_toBottomOf="@+id/encode_audio_choose_path_layout" />
 
     <Spinner
-        android:id="@+id/encode_audio_mode_spinner"
+        android:id="@+id/encode_audio_encode_mode_spinner"
         android:layout_width="130dp"
         android:layout_height="29dp"
         android:layout_marginEnd="10dp"
         android:entries="@array/codec_mode_arr"
-        app:layout_constraintBottom_toBottomOf="@+id/encode_audio_mode_tv"
-        app:layout_constraintEnd_toStartOf="@+id/encode_audio_data_mode_tv"
+        app:layout_constraintBottom_toBottomOf="@+id/encode_audio_encode_mode_tv"
+        app:layout_constraintEnd_toStartOf="@+id/encode_audio_encode_mode_tv"
         app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toEndOf="@+id/encode_audio_mode_tv"
-        app:layout_constraintTop_toTopOf="@+id/encode_audio_mode_tv" />
+        app:layout_constraintStart_toEndOf="@+id/encode_audio_encode_mode_tv"
+        app:layout_constraintTop_toTopOf="@+id/encode_audio_encode_mode_tv" />
 
     <TextView
         android:id="@+id/encode_audio_mutex_type_tv"
@@ -91,8 +91,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/channel_layout"
-        app:layout_constraintStart_toStartOf="@+id/encode_audio_mode_tv"
-        app:layout_constraintTop_toBottomOf="@+id/encode_audio_mode_spinner" />
+        app:layout_constraintStart_toStartOf="@+id/encode_audio_encode_mode_tv"
+        app:layout_constraintTop_toBottomOf="@+id/encode_audio_encode_mode_spinner" />
 
     <Spinner
         android:id="@+id/encode_audio_channelLayout_spinner"

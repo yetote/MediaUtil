@@ -2,6 +2,7 @@
 #include <string>
 #include "decode/FFmpegDemode.h"
 #include "util/LogUtil.h"
+#include "encode/FFmpegEncode.h"
 
 JavaVM *jvm;
 FFmpegDemode *fFmpegDecode;
@@ -23,6 +24,20 @@ void demuxing(JNIEnv *env, jobject obj, jstring in_, jstring aout_, jstring vout
 
 }
 
+void encodeAudio4FFmpeg(JNIEnv *env, jclass obj, jstring inputPath_, jstring outputPath_,
+                        jstring mime_) {
+    std::string inputPath = env->GetStringUTFChars(inputPath_, JNI_FALSE);
+    std::string outputPath = env->GetStringUTFChars(outputPath_, JNI_FALSE);
+    std::string mime = env->GetStringUTFChars(mime_, JNI_FALSE);
+
+    auto ffEncodeAudioSpr = std::make_shared<FFmpegEncode>();
+    ffEncodeAudioSpr->encodeAudio(inputPath, outputPath, mime);
+
+//    env->ReleaseStringUTFChars(mime_, mime.c_str());
+//    env->ReleaseStringUTFChars(outputPath_, outputPath.c_str());
+//    env->ReleaseStringUTFChars(inputPath_, inputPath.c_str());
+}
+
 void destroy(JNIEnv *env, jobject obj) {
     if (fFmpegDecode) {
         fFmpegDecode->destroy();
@@ -37,10 +52,9 @@ JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM *vm, void *reserved) {
     }
 
     JNINativeMethod methods[]{
-            {"demuxing", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V", (void *) demuxing},
-            {"destroy",  "()V",                                                       (void *) destroy},
+            {"encodeAudio", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V", (void *) encodeAudio4FFmpeg},
     };
-    jclass jlz = env->FindClass("com/yetote/ffmpegdemo/MyPlayer");
+    jclass jlz = env->FindClass("com/yetote/mediautil/util/FFmpegUtil");
     env->RegisterNatives(jlz, methods, sizeof(methods) / sizeof(methods[0]));
     return JNI_VERSION_1_6;
 }
