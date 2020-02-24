@@ -19,6 +19,7 @@ public:
     static void dumpFmt(const AVFormatContext &pFmtCtx);
 
     static void dumpOutFmt(const AVOutputFormat &pOutFmt);
+    static void dumpCodecCtx(const AVCodecContext &pCodecCtx);
 
 private:
 };

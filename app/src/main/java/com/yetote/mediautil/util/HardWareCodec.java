@@ -48,6 +48,7 @@ public class HardWareCodec {
 
     static {
         mimeMap.put("audio/mp4a-latm", "aac");
+
         aacObjectLevel.put("AAC MAIN", AACObjectMain);
         aacObjectLevel.put("AAC LC", AACObjectLC);
         aacObjectLevel.put("AAC SSR", AACObjectSSR);
@@ -182,7 +183,6 @@ public class HardWareCodec {
                     byte[] bytes = new byte[buffer.limit()];
                     buffer.get(bytes);
                     if (isWriteADTS) {
-                        Log.e(TAG, "onOutputBufferAvailable:sampleRate " + codec.getOutputFormat().getInteger(MediaFormat.KEY_SAMPLE_RATE));
                         FileUtils.write(outputChannel, MediaUtil.synthesisADTS(bytes.length, codecLevel, codec.getOutputFormat().getInteger(MediaFormat.KEY_SAMPLE_RATE), codec.getOutputFormat().getInteger(MediaFormat.KEY_CHANNEL_COUNT)), bytes);
                     } else {
                         FileUtils.write(outputChannel, bytes);

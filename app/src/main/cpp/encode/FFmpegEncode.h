@@ -19,13 +19,18 @@ class FFmpegEncode {
 public:
     FFmpegEncode() = default;
 
-    void encodeAudio(const std::string &inputPath, const std::string &outputPath,
-                     const std::string &mime);
-
+   void encodeAudio(const std::string &inputPath, const std::string &outputPath,
+                const std::string &mime,
+                int channelCount, int sampleRate, int bitRate);
 private:
     AVFormatContext *pFmtCt = nullptr;
     AVCodecContext *pCodecCtx = nullptr;
     AVOutputFormat *pOutFmtCtx = nullptr;
+    AVCodec *pCodec = nullptr;
+    AVPacket *packet= nullptr;
+    AVFrame *pFrame= nullptr;
+
+
 };
 
 

@@ -25,13 +25,13 @@ void demuxing(JNIEnv *env, jobject obj, jstring in_, jstring aout_, jstring vout
 }
 
 void encodeAudio4FFmpeg(JNIEnv *env, jclass obj, jstring inputPath_, jstring outputPath_,
-                        jstring mime_) {
+                        jstring mime_, jint channelCount, jint sampleRate, jint bitRate) {
     std::string inputPath = env->GetStringUTFChars(inputPath_, JNI_FALSE);
     std::string outputPath = env->GetStringUTFChars(outputPath_, JNI_FALSE);
     std::string mime = env->GetStringUTFChars(mime_, JNI_FALSE);
 
     auto ffEncodeAudioSpr = std::make_shared<FFmpegEncode>();
-    ffEncodeAudioSpr->encodeAudio(inputPath, outputPath, mime);
+    ffEncodeAudioSpr->encodeAudio(inputPath, outputPath, mime, channelCount, sampleRate, bitRate);
 
 //    env->ReleaseStringUTFChars(mime_, mime.c_str());
 //    env->ReleaseStringUTFChars(outputPath_, outputPath.c_str());
@@ -52,7 +52,7 @@ JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM *vm, void *reserved) {
     }
 
     JNINativeMethod methods[]{
-            {"encodeAudio", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V", (void *) encodeAudio4FFmpeg},
+            {"encodeAudio", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;III)V", (void *) encodeAudio4FFmpeg},
     };
     jclass jlz = env->FindClass("com/yetote/mediautil/util/FFmpegUtil");
     env->RegisterNatives(jlz, methods, sizeof(methods) / sizeof(methods[0]));

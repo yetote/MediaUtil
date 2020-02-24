@@ -82,10 +82,7 @@ public class EncodeUtils {
         if (isHardWare) {
             HardWareCodec.encodeAudio(inputChannel, outputChannel, codecName, mime, sampleRate, channelCount, true, codecLevel, isWriteADTS, progressCallback);
         } else {
-            Log.e(TAG, "encodeAudio: "+inputPath );
-            Log.e(TAG, "encodeAudio: "+outputPath );
-            Log.e(TAG, "encodeAudio: "+mime );
-            FFmpegUtil.encodeAudio(inputPath, outputPath, mime);
+            FFmpegUtil.encodeAudio(inputPath, outputPath, mime, channelCount, sampleRate, 96000);
         }
     }
 

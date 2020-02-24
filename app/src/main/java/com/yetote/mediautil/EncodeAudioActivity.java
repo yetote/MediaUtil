@@ -83,7 +83,7 @@ public class EncodeAudioActivity extends AppCompatActivity implements View.OnCli
         help = findViewById(R.id.encode_audio_choose_level_help);
         encodeModeSpinner = findViewById(R.id.encode_audio_encode_mode_spinner);
         // TODO: 2020/2/18 测试使用路径，正式要记得删除
-        pathTv.setText("/storage/emulated/0/441stereo.pcm");
+        pathTv.setText("/storage/emulated/0/48stereo.pcm");
 
 
         encodeUtils = new EncodeUtils();
@@ -266,9 +266,8 @@ public class EncodeAudioActivity extends AppCompatActivity implements View.OnCli
                         String mime = chooseFormatBtn.getText().toString();
 //                        String encodeType = HardWareCodec.HW_ENCODEC_TYPE_ASYNCHRONOUS==;
                         codecLevel = chooserLevelBtn.getText().toString().equalsIgnoreCase(getString(R.string.pause_to_choose_level)) ? "AAC LC" : chooserLevelBtn.getText().toString();
-                        String outputPath = this.getExternalFilesDir(Environment.DIRECTORY_MUSIC).getPath() + "/" + codecName.replace(".", "_") + "_" + codecLevel.replace(" ", "_") + ".aac";
+                        String outputPath = this.getExternalFilesDir(Environment.DIRECTORY_MUSIC).getPath() + "/" + (isHardware ? codecName.replace(".", "_") : "ffmpeg") + "_" + codecLevel.replace(" ", "_") + ".aac";
                         if (FileUtils.createFile(outputPath)) {
-//                            HardWareCodec.encodeAudio(pathTv.getText().toString(), outputPath, codecName, "audio/" + mime, sampleRate, channelCount, HardWareCodec.HW_ENCODEC_TYPE_ASYNCHRONOUS, codecLevel, isWriteADTS, progressCallback);
                             encodeUtils.setInputPath(pathTv.getText().toString())
                                     .setOutputPath(outputPath)
                                     .setHardware(isHardware)
