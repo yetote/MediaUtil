@@ -109,7 +109,7 @@ public class HardWareCodec {
             mediaFormat.setInteger(MediaFormat.KEY_SAMPLE_RATE, sampleRate);
             mediaFormat.setInteger(MediaFormat.KEY_AAC_PROFILE, aacObjectLevel.get(codecLevel));
             mediaFormat.setInteger(MediaFormat.KEY_MAX_INPUT_SIZE, minBufferSize * 2);
-            mediaFormat.setInteger(MediaFormat.KEY_BIT_RATE, sampleRate * channelCount / 4);
+            mediaFormat.setInteger(MediaFormat.KEY_BIT_RATE, sampleRate * channelCount);
             mediaCodec.configure(mediaFormat, null, null, MediaCodec.CONFIGURE_FLAG_ENCODE);
 
             if (codecType) {

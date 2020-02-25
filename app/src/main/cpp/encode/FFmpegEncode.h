@@ -11,6 +11,7 @@
 
 extern "C" {
 #include <libavformat/avformat.h>
+#include <libswresample/swresample.h>
 };
 
 #define FFmpegEncode_TAG "FFmpegEncode"
@@ -23,7 +24,7 @@ public:
                 const std::string &mime,
                 int channelCount, int sampleRate, int bitRate);
 private:
-    AVFormatContext *pFmtCt = nullptr;
+    AVFormatContext *pFmtCtx = nullptr;
     AVCodecContext *pCodecCtx = nullptr;
     AVOutputFormat *pOutFmtCtx = nullptr;
     AVCodec *pCodec = nullptr;
